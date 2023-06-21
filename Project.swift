@@ -8,13 +8,18 @@ let project = Project.makeModule(
     packages: [
         .SnapKit,
         .Then,
-        .Kingfisher
+        .Kingfisher,
+        .RxSwift,
+        .RxFlow
     ],
     dependencies: [
         .SPM.SnapKit,
         .SPM.Then,
-        .SPM.Kingfisher
+        .SPM.Kingfisher,
+        .SPM.RxSwift,
+        .SPM.RxFlow
     ],
     resources: ["Resources/**"],
+    scripts: [.SwiftLintString],
     infoPlist: .file(path: "Support/Info.plist")
 )

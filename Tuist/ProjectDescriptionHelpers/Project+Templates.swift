@@ -11,6 +11,7 @@ public extension Project {
         dependencies: [TargetDependency] = [],
         sources: SourceFilesList = ["Sources/**"],
         resources: ResourceFileElements? = nil,
+        scripts: [ProjectDescription.TargetScript] = [],
         infoPlist: InfoPlist = .default
     ) -> Project {
         let settings: Settings = .settings(
@@ -19,7 +20,7 @@ public extension Project {
                 .debug(name: .debug),
                 .release(name: .release)
             ], defaultSettings: .recommended)
-        
+
         let appTarget = Target(
             name: name,
             platform: platform,
@@ -29,13 +30,14 @@ public extension Project {
             infoPlist: infoPlist,
             sources: sources,
             resources: resources,
+            scripts: scripts,
             dependencies: dependencies
         )
-        
+
         let schemes: [Scheme] = [.makeScheme(target: .debug, name: name)]
-        
+
         let targets: [Target] = [appTarget]
-        
+
         return Project(
             name: name,
             organizationName: organizationName,
