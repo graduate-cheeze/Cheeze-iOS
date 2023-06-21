@@ -1,26 +1,20 @@
 import UIKit
-import SnapKit
-import Then
 
-class ViewController: UIViewController {
-    private let viewBounds = UIScreen.main.bounds
+final class SignInViewController: BaseVC<SignInViewModel> {
 
     private let logoImage = UIImageView().then {
         $0.image = CheezeAsset.Image.logoImage.image
     }
 
-    override func viewDidLoad() {
-        view.backgroundColor = .white
-
-        addView()
-        setLayout()
+    private let emailImage = UIImageView().then {
+        $0.image = CheezeAsset.Image.emailIcon.image
     }
 
-    func addView() {
+    override func addView() {
         view.addSubview(logoImage)
     }
 
-    func setLayout() {
+    override func setLayout() {
         logoImage.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(65)
             $0.centerX.equalToSuperview()
