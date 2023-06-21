@@ -6,12 +6,12 @@ final class SignInViewController: BaseVC<SignInViewModel> {
         $0.image = CheezeAsset.Image.logoImage.image
     }
 
-    private let emailImage = UIImageView().then {
-        $0.image = CheezeAsset.Image.emailIcon.image
+    private let inputEmailTextField = InputUserInfoTextField().then {
+        $0.placeholder = "이메일"
     }
 
     override func addView() {
-        view.addSubview(logoImage)
+        view.addSubviews(logoImage, inputEmailTextField)
     }
 
     override func setLayout() {
@@ -20,6 +20,12 @@ final class SignInViewController: BaseVC<SignInViewModel> {
             $0.centerX.equalToSuperview()
             $0.height.equalToSuperview().dividedBy(7.25)
             $0.width.equalToSuperview().dividedBy(2.5)
+        }
+
+        inputEmailTextField.snp.makeConstraints {
+            $0.top.equalTo(logoImage.snp.bottom).offset(37)
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.height.equalToSuperview().dividedBy(14.5)
         }
     }
 }
