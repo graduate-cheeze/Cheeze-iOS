@@ -19,7 +19,7 @@ let project = Project.makeModule(
         .SPM.RxSwift,
         .SPM.RxFlow
     ],
-    resources: ["Resources/**"],
+    resources: ["Projects/Resources/**"],
     scripts: [.SwiftLintString],
-    infoPlist: .file(path: "Support/Info.plist")
+    infoPlist: .file(path: "Projects/Support/Info.plist")
 )

@@ -9,7 +9,7 @@ public extension Project {
         packages: [Package] = [],
         deploymentTarget: DeploymentTarget? = .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
         dependencies: [TargetDependency] = [],
-        sources: SourceFilesList = ["Sources/**"],
+        sources: SourceFilesList = ["Projects/Sources/**"],
         resources: ResourceFileElements? = nil,
         scripts: [ProjectDescription.TargetScript] = [],
         infoPlist: InfoPlist = .default
