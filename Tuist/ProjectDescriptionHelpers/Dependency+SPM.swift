@@ -10,6 +10,7 @@ public extension TargetDependency.SPM {
     static let Kingfisher = TargetDependency.package(product: "Kingfisher")
     static let RxSwift = TargetDependency.package(product: "RxSwift")
     static let RxFlow = TargetDependency.package(product: "RxFlow")
+    static let Gradients = TargetDependency.package(product: "UIGradient")
 
 }
 
@@ -32,5 +33,8 @@ public extension Package {
     )
     static let RxFlow = Package.remote(
         url: "https://github.com/RxSwiftCommunity/RxFlow",
-        requirement: .upToNextMajor(from: "2.13.0"))
+        requirement: .upToNextMajor(from: "2.13.0")
+    )
+    static let Gradients = Package.remote(url: "https://github.com/Gradients/Gradients",
+        requirement: .upToNextMajor(from: "0.3.1"))
 }
