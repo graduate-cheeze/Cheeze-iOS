@@ -29,13 +29,13 @@ final class SignInViewController: BaseVC<SignInViewModel> {
         $0.textColor = CheezeAsset.Colors.neutral30.color
         $0.font = CheezeFontFamily.Pretendard.semiBold.font(size: 13)
     }
-    
+
     private let pushSignUpButton = UIButton().then {
         $0.setTitle("회원가입", for: .normal)
         $0.titleLabel?.font = CheezeFontFamily.Pretendard.semiBold.font(size: 13)
         $0.setTitleColor(CheezeAsset.Colors.neutral50.color, for: .normal)
     }
-    
+
     override func configureVC() {
     }
 

@@ -1,7 +1,6 @@
 import UIKit
 import SnapKit
 import Then
-import Gradients
 
 final class MainButton: UIView {
     // MARK: - Properties
@@ -17,7 +16,7 @@ final class MainButton: UIView {
     }
 
     private let mainButton = UIButton().then {
-        $0.backgroundColor = CheezeAsset.Colors.primaryColor2.color
+        $0.backgroundColor = UIColor.cheezeColor(.primary(.primary2))
         $0.layer.masksToBounds = true
         $0.layer.cornerRadius = 20
         $0.titleLabel?.font = CheezeFontFamily.Pretendard.bold.font(size: 16)
@@ -83,6 +82,10 @@ final class MainButton: UIView {
         mainButton.snp.makeConstraints {
             $0.size.equalToSuperview()
         }
+    }
+    
+   func setTitle(text: String) {
+        mainButton.setTitle(text, for: .normal)
     }
 
     // MARK: - Helpers
