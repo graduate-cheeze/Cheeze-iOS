@@ -16,6 +16,17 @@ final class IntroVC: BaseVC<IntroVM> {
         $0.setTitleColor(UIColor.cheezeColor(.neutral(.neutral50)), for: .normal)
     }
 
+    private func bindViewModel() {
+            let input = IntroVM.Input(
+                signInButtonTap: pushSignInButton.rx.tap.asObservable()
+            )
+            let output = viewModel.transVC(input: input)
+    }
+
+    override func configureVC() {
+        bindViewModel()
+    }
+
     override func addView() {
         view.addSubviews(logoImage, pushSignUpButton, pushSignInButton)
     }

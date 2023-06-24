@@ -31,12 +31,30 @@ class IntroFlow: Flow {
         switch step {
         case .introIsRequired:
             return introIsRequired()
+        case .signInIsRequired:
+            return signInIsRequired()
+        case .signUpIsRequired:
+            return signUpIsRequired()
         }
     }
 
     private func introIsRequired() -> FlowContributors {
         let viewModel = IntroVM()
         let viewController = IntroVC(viewModel)
+        self.rootViewController.pushViewController(viewController, animated: true)
+        return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
+    }
+
+    private func signInIsRequired() -> FlowContributors {
+        let viewModel = SignInViewModel()
+        let viewController = SignInViewController(viewModel)
+        self.rootViewController.pushViewController(viewController, animated: true)
+        return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
+    }
+
+    private func signUpIsRequired() -> FlowContributors {
+        let viewModel = SignInViewModel()
+        let viewController = SignInViewController(viewModel)
         self.rootViewController.pushViewController(viewController, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
     }

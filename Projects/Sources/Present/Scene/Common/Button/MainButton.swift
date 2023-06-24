@@ -83,7 +83,7 @@ final class MainButton: UIView {
             $0.size.equalToSuperview()
         }
     }
-    
+
    func setTitle(text: String) {
         mainButton.setTitle(text, for: .normal)
     }

@@ -37,6 +37,8 @@ final class AppFlow: Flow {
         switch step {
         case .introIsRequired:
             return coordinateToIntro()
+        default:
+            return .none
         }
     }
 }

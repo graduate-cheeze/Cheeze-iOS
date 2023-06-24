@@ -82,7 +82,7 @@ final class SignInViewController: BaseVC<SignInViewModel> {
 
         pushSignUpButton.snp.makeConstraints {
             $0.centerY.equalTo(signUpLabel)
-            $0.trailing.equalToSuperview().inset(99)
+            $0.leading.equalTo(signUpLabel.snp.trailing).offset(8)
         }
     }
 }
