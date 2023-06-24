@@ -10,14 +10,16 @@ let project = Project.makeModule(
         .Then,
         .Kingfisher,
         .RxSwift,
-        .RxFlow
+        .RxFlow,
+        .Gradients
     ],
     dependencies: [
         .SPM.SnapKit,
         .SPM.Then,
         .SPM.Kingfisher,
         .SPM.RxSwift,
-        .SPM.RxFlow
+        .SPM.RxFlow,
+        .SPM.Gradients
     ],
     resources: ["Projects/Resources/**"],
     scripts: [.SwiftLintString],

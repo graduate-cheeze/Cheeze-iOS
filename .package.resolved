@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "gradients",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Gradients/Gradients",
+      "state" : {
+        "revision" : "0ec91855a90e8b376f7460457b1b5f3f204a1c3c",
+        "version" : "0.3.1"
+      }
+    },
+    {
       "identity" : "kingfisher",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Kingfisher",
