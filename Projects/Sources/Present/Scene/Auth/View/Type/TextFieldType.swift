@@ -1,5 +1,5 @@
 import Foundation
 
 enum TextFieldType {
-    case normalTextField, secureTextField
+    case emailTextField, secureTextField, nomalTextField
 }

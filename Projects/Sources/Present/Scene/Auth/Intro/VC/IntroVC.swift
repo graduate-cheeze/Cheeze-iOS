@@ -18,7 +18,8 @@ final class IntroVC: BaseVC<IntroVM> {
 
     private func bindViewModel() {
             let input = IntroVM.Input(
-                signInButtonTap: pushSignInButton.rx.tap.asObservable()
+                signInButtonTap: pushSignInButton.rx.tap.asObservable(),
+                signUpButtonTap: pushSignUpButton.mainButton.rx.tap.asObservable()
             )
             let output = viewModel.transVC(input: input)
     }
