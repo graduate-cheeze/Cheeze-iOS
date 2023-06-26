@@ -7,7 +7,7 @@ import RxCocoa
 final class InputUserInfoTextField: UITextField {
     private let disposeBag = DisposeBag()
 
-    var type: TextFieldType = .normalTextField
+    var type: TextFieldType = .emailTextField
 
     private let clearButton = UIButton().then {
         $0.setImage(CheezeAsset.Image.xmarkIcon.image, for: .normal)
@@ -80,10 +80,12 @@ extension InputUserInfoTextField: UITextFieldDelegate {
         textField.layer.borderColor = CheezeAsset.Colors.neutral50.color.cgColor
 
         switch self.type {
-        case .normalTextField:
+        case .emailTextField:
             textField.addLeftImage(image: CheezeAsset.Image.emailIconFill.image)
         case .secureTextField:
             textField.addLeftImage(image: CheezeAsset.Image.pwIconFill.image)
+        case .nomalTextField:
+            textField.leftView = .none
         }
     }
 
@@ -91,10 +93,12 @@ extension InputUserInfoTextField: UITextFieldDelegate {
         textField.layer.borderColor = UIColor.clear.cgColor
 
         switch self.type {
-        case .normalTextField:
+        case .emailTextField:
             textField.addLeftImage(image: CheezeAsset.Image.emailIcon.image)
         case .secureTextField:
             textField.addLeftImage(image: CheezeAsset.Image.pwIcon.image)
+        case .nomalTextField:
+            textField.leftView = .none
         }
     }
 }

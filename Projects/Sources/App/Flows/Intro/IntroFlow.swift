@@ -35,6 +35,8 @@ class IntroFlow: Flow {
             return signInIsRequired()
         case .signUpIsRequired:
             return signUpIsRequired()
+        case .decoIsRequired:
+            return decoVCIsRequired()
         }
     }
 
@@ -53,8 +55,15 @@ class IntroFlow: Flow {
     }
 
     private func signUpIsRequired() -> FlowContributors {
-        let viewModel = SignInViewModel()
-        let viewController = SignInViewController(viewModel)
+        let viewModel = SignUpViewModel()
+        let viewController = SignUpViewController(viewModel)
+        self.rootViewController.pushViewController(viewController, animated: true)
+        return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
+    }
+    
+    private func decoVCIsRequired()-> FlowContributors {
+        let viewModel = DecoViewModel()
+        let viewController = DecoViewController(viewModel)
         self.rootViewController.pushViewController(viewController, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
     }

@@ -6,7 +6,7 @@ final class SignInViewController: BaseVC<SignInViewModel> {
         $0.image = CheezeAsset.Image.logoImage.image
     }
 
-    private let inputEmailTextField = InputUserInfoTextField(type: .normalTextField).then {
+    private let inputEmailTextField = InputUserInfoTextField(type: .emailTextField).then {
         $0.addLeftImage(image: CheezeAsset.Image.emailIcon.image)
         $0.placeholder = "이메일"
     }
@@ -36,7 +36,15 @@ final class SignInViewController: BaseVC<SignInViewModel> {
         $0.setTitleColor(CheezeAsset.Colors.neutral50.color, for: .normal)
     }
 
+    private func bindViewModel() {
+        let input = SignInViewModel.Input(
+            decoButtonTap: signInButton.mainButton.rx.tap.asObservable()
+        )
+        let output = viewModel.transVC(input: input)
+    }
+
     override func configureVC() {
+        bindViewModel()
     }
 
     override func addView() {

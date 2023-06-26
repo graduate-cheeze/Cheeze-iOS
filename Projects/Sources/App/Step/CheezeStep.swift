@@ -15,4 +15,6 @@ enum CZStep: Step {
     // MARK: - Auth
     case signUpIsRequired
     case signInIsRequired
+    
+    case decoIsRequired
 }

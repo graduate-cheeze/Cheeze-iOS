@@ -15,7 +15,7 @@ final class MainButton: UIView {
         setLayout()
     }
 
-    private let mainButton = UIButton().then {
+    let mainButton = UIButton().then {
         $0.backgroundColor = UIColor.cheezeColor(.primary(.primary2))
         $0.layer.masksToBounds = true
         $0.layer.cornerRadius = 20
