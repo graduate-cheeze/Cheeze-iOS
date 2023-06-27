@@ -23,7 +23,7 @@ final class NormalButtonFrame: UIButton {
         self.layer.borderColor = UIColor.cheezeColor(.neutral(.neutral20)).cgColor
         self.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
     }
-    
+
     private func setLayout() {
         buttonIconImageView.snp.makeConstraints {
             $0.center.equalToSuperview()
