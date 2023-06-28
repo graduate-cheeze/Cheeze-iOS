@@ -18,7 +18,7 @@ final class NormalButtonFrame: UIButton {
 
     // MARK: - Helpers
     private func configureUI() {
-        self.layer.cornerRadius = 16
+        layer.cornerRadius = 16
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor.cheezeColor(.neutral(.neutral20)).cgColor
         self.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))

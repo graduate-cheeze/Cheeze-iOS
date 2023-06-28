@@ -17,4 +17,5 @@ enum CZStep: Step {
     case signInIsRequired
     
     case decoIsRequired
+    case galleryIsRequired
 }
