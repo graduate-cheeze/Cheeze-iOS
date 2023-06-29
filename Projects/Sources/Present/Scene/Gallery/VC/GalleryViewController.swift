@@ -41,6 +41,8 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
             }
         }
 
+        self.loadGallery()
+
         galleryCollectionView.dataSource = self
         galleryCollectionView.delegate = self
         galleryCollectionView.register(GalleryCell.self, forCellWithReuseIdentifier: GalleryCell.identifier)
@@ -50,13 +52,9 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
 
     func loadGallery() {
         let fetchOptions = PHFetchOptions()
-        // 원하는 조건에 맞게 fetchOptions를 설정할 수 있습니다.
 
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        
         fetchResult = PHAsset.fetchAssets(with: fetchOptions)
-        // fetchResult에는 사용자의 사진 및 비디오 컬렉션에 해당하는 PHAsset 객체들이 포함됩니다.
-        // 이를 사용하여 갤러리를 구성하고 커스텀하여 화면에 표시할 수 있습니다.
     }
 
     override func addView() {
@@ -72,17 +70,15 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
 }
 
 extension GalleryViewController: UICollectionViewDelegate, UICollectionViewDataSource,
-                                    UICollectionViewDelegateFlowLayout {
-    // UICollectionViewDataSource 프로토콜 메서드 구현
+                                 UICollectionViewDelegateFlowLayout {
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // 갤러리에 표시할 항목의 개수를 반환합니다.
-        // 예를 들어, 사용자의 사진 개수를 반환할 수 있습니다.
         return fetchResult?.count ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // UICollectionViewCell 인스턴스를 생성하고 데이터를 설정합니다.
+
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: GalleryCell.identifier,
                                                             for: indexPath) as? GalleryCell else {
             fatalError("Unable to dequeue GalleryCell")
@@ -124,19 +120,39 @@ extension GalleryViewController: UICollectionViewDelegate, UICollectionViewDataS
             return
         }
 
-        if selectedPhotos.count < maxSelectionCount {
-            // 이미 선택된 사진인지 확인
-            if !selectedPhotos.contains(asset) {
-                // 사진을 선택한 경우
+        if selectedPhotos.contains(asset) {
+            if let index = selectedPhotos.firstIndex(of: asset) {
+                selectedPhotos.remove(at: index)
+            }
+            cell.isSelected = false
+            cell.changeColor(num: "", hidden: true)
+        } else {
+            if selectedPhotos.count < maxSelectionCount {
                 selectedPhotos.append(asset)
                 cell.isSelected = true
-                cell.changeColor()
-                cell.setNumber(num: "\(selectedPhotos.count)")
+                cell.changeColor(num: "\(selectedPhotos.count)", hidden: false)
+            } else {
+
             }
-        } else {
-            // 이미 최대 선택 개수에 도달한 경우
-            collectionView.deselectItem(at: indexPath, animated: false)
-            // 선택 취소 처리
+        }
+
+        updateCellUI()
+    }
+
+    func updateCellUI() {
+        for indexPath in galleryCollectionView.indexPathsForVisibleItems {
+            guard let cell = galleryCollectionView.cellForItem(at: indexPath) as? GalleryCell,
+                  let asset = fetchResult?.object(at: indexPath.item) else {
+                continue
+            }
+
+            if selectedPhotos.contains(asset) {
+                if let index = selectedPhotos.firstIndex(of: asset) {
+                    cell.changeColor(num: "\(index + 1)", hidden: false)
+                }
+            } else {
+                cell.changeColor(num: "", hidden: true)
+            }
         }
     }
 }

@@ -46,16 +46,13 @@ class GalleryCell: UICollectionViewCell {
         }
     }
 
-    func changeColor() {
-        blackView.isHidden = false
+    func changeColor(num: String, hidden: Bool) {
+        blackView.isHidden = hidden
+        cellNumberLabel.text = num
     }
 
     // 셀의 데이터를 설정하는 메서드
     func configure(with image: UIImage) {
         imageView.image = image
-    }
-
-    func setNumber(num: String) {
-        cellNumberLabel.text = num
     }
 }
