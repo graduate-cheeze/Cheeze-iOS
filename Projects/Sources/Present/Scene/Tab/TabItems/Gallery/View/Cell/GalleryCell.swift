@@ -1,8 +1,12 @@
 import UIKit
+import RxSwift
+import RxCocoa
+import RxRelay
 import SnapKit
 
 class GalleryCell: UICollectionViewCell {
     static let identifier = "GalleryCell"
+    private(set) var disposeBag = DisposeBag()
 
     // 셀의 UI 요소들을 선언합니다.
     let imageView = UIImageView()
@@ -30,6 +34,11 @@ class GalleryCell: UICollectionViewCell {
         super.init(coder: aDecoder)
 
         setLayout()
+    }
+    
+    override func prepareForReuse() {
+            super.prepareForReuse()
+            disposeBag = DisposeBag() // 이전의 구독을 폐기
     }
 
     private func setLayout() {

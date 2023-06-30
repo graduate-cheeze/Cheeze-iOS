@@ -1,9 +1,14 @@
 import UIKit
+import RxSwift
+import RxCocoa
+import RxRelay
 import Photos
 
 final class GalleryViewController: BaseVC<GalleryViewModel> {
-    private var selectedPhotos: [PHAsset] = []
+    private let selectedPhotos = BehaviorRelay<[PHAsset]>(value: [])
     private let maxSelectionCount = 4
+    private var fetchResult: PHFetchResult<PHAsset>?
+    private let imageManager = PHImageManager.default()
 
     private let leftLogoLabel = UILabel().then {
         $0.text = "갤러리"
@@ -15,10 +20,12 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
         $0.minimumInteritemSpacing = 3
     }
 
-    private lazy var galleryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
+    private lazy var completeButton = UIBarButtonItem(title: "확인",
+                                                      style: .plain,
+                                                      target: nil,
+                                                      action: nil)
 
-    private var fetchResult: PHFetchResult<PHAsset>?
-    private let imageManager = PHImageManager.default()
+    private lazy var galleryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
 
     override func configureVC() {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -48,6 +55,17 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
         galleryCollectionView.register(GalleryCell.self, forCellWithReuseIdentifier: GalleryCell.identifier)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftLogoLabel)
+        navigationItem.rightBarButtonItem = completeButton
+
+        bind()
+    }
+
+    private func bind() {
+        selectedPhotos.asObservable()
+            .map { $0.isEmpty } // 선택된 사진이 없는 경우
+            .bind(to: completeButton.rx.isHidden) // 확인 버튼의 isHidden 속성에 바인딩
+            .disposed(by: disposeBag)
+
     }
 
     func loadGallery() {
@@ -101,6 +119,10 @@ extension GalleryViewController: UICollectionViewDelegate, UICollectionViewDataS
                 cell.layer.cornerRadius = 8
             }
         }
+        
+        if let asset = fetchResult?.object(at: indexPath.item) {
+            updateCellUI()
+        }
 
         // 셀의 데이터 설정
         return cell
@@ -120,23 +142,21 @@ extension GalleryViewController: UICollectionViewDelegate, UICollectionViewDataS
             return
         }
 
-        if selectedPhotos.contains(asset) {
-            if let index = selectedPhotos.firstIndex(of: asset) {
-                selectedPhotos.remove(at: index)
+        if selectedPhotos.value.contains(asset) {
+            if let index = selectedPhotos.value.firstIndex(of: asset) {
+                selectedPhotos.accept(selectedPhotos.value.filter { $0 != asset })
+                cell.isSelected = false
+                cell.changeColor(num: "", hidden: true)
             }
-            cell.isSelected = false
-            cell.changeColor(num: "", hidden: true)
         } else {
-            if selectedPhotos.count < maxSelectionCount {
-                selectedPhotos.append(asset)
+            if selectedPhotos.value.count < maxSelectionCount {
+                selectedPhotos.accept(selectedPhotos.value + [asset])
                 cell.isSelected = true
-                cell.changeColor(num: "\(selectedPhotos.count)", hidden: false)
+                cell.changeColor(num: "\(selectedPhotos.value.count)", hidden: false)
             } else {
-
+                // 선택 가능한 최대 개수를 초과한 경우에 대한 처리
             }
         }
-
-        updateCellUI()
     }
 
     func updateCellUI() {
@@ -145,14 +165,19 @@ extension GalleryViewController: UICollectionViewDelegate, UICollectionViewDataS
                   let asset = fetchResult?.object(at: indexPath.item) else {
                 continue
             }
-
-            if selectedPhotos.contains(asset) {
-                if let index = selectedPhotos.firstIndex(of: asset) {
-                    cell.changeColor(num: "\(index + 1)", hidden: false)
+            selectedPhotos.asObservable()
+                .map { $0.contains(asset) ? ($0.firstIndex(of: asset) ?? -1) + 1 : nil }
+                .map { index -> (String, Bool) in
+                    if let index = index {
+                        return (String(index), false)
+                    } else {
+                        return ("", true)
+                    }
                 }
-            } else {
-                cell.changeColor(num: "", hidden: true)
-            }
+                .subscribe(onNext: { [weak cell] (number, isHidden) in
+                    cell?.changeColor(num: number, hidden: isHidden) // 셀의 UI 업데이트
+                })
+                .disposed(by: cell.disposeBag)
         }
     }
 }

@@ -2,10 +2,7 @@ import UIKit
 import Photos
 
 final class CaptureViewController: BaseVC<CaptureViewModel> {
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        view.backgroundColor = .red
+    override func configureVC() {
+        view.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
     }
 }
