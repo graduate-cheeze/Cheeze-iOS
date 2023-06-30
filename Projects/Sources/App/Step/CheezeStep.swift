@@ -16,6 +16,10 @@ enum CZStep: Step {
     case signUpIsRequired
     case signInIsRequired
     
+    case tabBarIsRequired
+    
     case decoIsRequired
     case galleryIsRequired
+    case captureIsRequired
+    case homeIsRequired
 }

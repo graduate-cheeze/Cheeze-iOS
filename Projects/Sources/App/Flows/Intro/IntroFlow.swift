@@ -35,10 +35,10 @@ class IntroFlow: Flow {
             return signInIsRequired()
         case .signUpIsRequired:
             return signUpIsRequired()
-        case .decoIsRequired:
-            return decoVCIsRequired()
-        case .galleryIsRequired:
-            return galleryIsRequired()
+        case .tabBarIsRequired:
+            return .end(forwardToParentFlowWithStep: CZStep.tabBarIsRequired)
+        default:
+            return .none
         }
     }
 
@@ -59,20 +59,6 @@ class IntroFlow: Flow {
     private func signUpIsRequired() -> FlowContributors {
         let viewModel = SignUpViewModel()
         let viewController = SignUpViewController(viewModel)
-        self.rootViewController.pushViewController(viewController, animated: true)
-        return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
-    }
-
-    private func decoVCIsRequired() -> FlowContributors {
-        let viewModel = DecoViewModel()
-        let viewController = DecoViewController(viewModel)
-        self.rootViewController.pushViewController(viewController, animated: true)
-        return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
-    }
-
-    private func galleryIsRequired() -> FlowContributors {
-        let viewModel = GalleryViewModel()
-        let viewController = GalleryViewController(viewModel)
         self.rootViewController.pushViewController(viewController, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
     }

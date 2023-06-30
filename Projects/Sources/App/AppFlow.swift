@@ -37,6 +37,8 @@ final class AppFlow: Flow {
         switch step {
         case .introIsRequired:
             return coordinateToIntro()
+        case .tabBarIsRequired:
+            return coordinateToHome()
         default:
             return .none
         }
@@ -44,7 +46,7 @@ final class AppFlow: Flow {
 }
 
 private extension AppFlow {
-    func coordinateToIntro() -> FlowContributors {
+    private func coordinateToIntro() -> FlowContributors {
         let flow = IntroFlow()
         Flows.use(flow,
                   when: .created) { [unowned self] root in
@@ -55,4 +57,21 @@ private extension AppFlow {
             withNextStepper: OneStepper(withSingleStep:
                                             CZStep.introIsRequired)))
     }
+
+    private func coordinateToHome() -> FlowContributors {
+            let flow = TabBarFlow()
+            Flows.use(
+                flow,
+                when: .created
+            ) { [unowned self] root in
+                self.window.rootViewController = root
+            }
+            return .one(
+                flowContributor: .contribute(
+                    withNextPresentable: flow,
+                    withNextStepper: OneStepper(
+                        withSingleStep: CZStep.tabBarIsRequired
+                    )
+            ))
+        }
 }

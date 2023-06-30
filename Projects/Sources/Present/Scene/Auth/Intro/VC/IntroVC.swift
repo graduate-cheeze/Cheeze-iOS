@@ -35,7 +35,7 @@ final class IntroVC: BaseVC<IntroVM> {
     override func setLayout() {
         logoImage.snp.makeConstraints {
             $0.top.equalToSuperview().inset(bounds.height/3.2)
-            $0.leading.trailing.equalToSuperview().inset(113)
+            $0.centerX.equalToSuperview()
             $0.height.equalToSuperview().dividedBy(7.25)
             $0.width.equalToSuperview().dividedBy(2.5)
         }
