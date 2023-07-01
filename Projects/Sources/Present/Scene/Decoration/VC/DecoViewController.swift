@@ -15,6 +15,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         $0.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:
                                     UIColor.black,
                                    .font: CheezeFontFamily.Pretendard.bold.font(size: 15)], for: .selected)
+        $0.addTarget(self, action: #selector(segmentedControlValueChanged), for: .valueChanged)
     }
 
     private let oneFrameView = OneFrameView().then {
@@ -22,11 +23,11 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         $0.isHidden = true
     }
 
-    private let oneFrameButton = ButtonContainer()
-
     private let fourFrameView = FourFrameView().then {
         $0.isHidden = true
     }
+
+    private let oneFrameButton = ButtonContainer()
 
     private func oneFrameButtonDidTap() {
         oneFrameButton.oneFrameButton.rx.tap
@@ -66,6 +67,15 @@ final class DecoViewController: BaseVC<DecoViewModel> {
             })
             .disposed(by: disposeBag)
     }
+    
+    @objc private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        let selectedIndex = sender.selectedSegmentIndex
+        if selectedIndex == 0 {
+            oneFrameButton.isHidden = true
+        } else if selectedIndex == 1 {
+            oneFrameButton.isHidden = false
+        }
+    }
 
     private func bindViewMode() {
         let input = DecoViewModel.Input()
@@ -74,6 +84,8 @@ final class DecoViewController: BaseVC<DecoViewModel> {
 
     override func configureVC() {
         navigationItem.title = "1/10"
+
+        menuTypeSegmentedControl.selectedSegmentIndex = 1
         oneFrameButtonDidTap()
     }
 
