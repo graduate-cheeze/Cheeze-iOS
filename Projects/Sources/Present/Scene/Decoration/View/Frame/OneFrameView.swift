@@ -1,7 +1,10 @@
 import UIKit
 
 final class OneFrameView: UIView {
-    private let mainImageView = UIImageView()
+    private let mainImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
 
     // MARK: - LifeCycles
     override init(frame: CGRect) {

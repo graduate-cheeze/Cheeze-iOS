@@ -35,7 +35,7 @@ class GalleryCell: UICollectionViewCell {
 
         setLayout()
     }
-    
+
     override func prepareForReuse() {
             super.prepareForReuse()
             disposeBag = DisposeBag() // 이전의 구독을 폐기
@@ -49,7 +49,7 @@ class GalleryCell: UICollectionViewCell {
         blackView.snp.makeConstraints {
             $0.size.equalToSuperview()
         }
-        
+
         cellNumberLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }

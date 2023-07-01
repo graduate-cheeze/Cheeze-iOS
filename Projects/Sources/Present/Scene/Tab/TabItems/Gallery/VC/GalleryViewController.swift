@@ -126,7 +126,7 @@ extension GalleryViewController: UICollectionViewDelegate, UICollectionViewDataS
                 cell.layer.cornerRadius = 8
             }
         }
-        
+
         if let asset = fetchResult?.object(at: indexPath.item) {
             updateCellUI()
         }
@@ -164,6 +164,8 @@ extension GalleryViewController: UICollectionViewDelegate, UICollectionViewDataS
                 // 선택 가능한 최대 개수를 초과한 경우에 대한 처리
             }
         }
+
+        viewModel.updateSelectedPhotos(selectedPhotos.value)
     }
 
     func updateCellUI() {

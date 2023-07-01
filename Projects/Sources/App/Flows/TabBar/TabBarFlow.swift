@@ -45,7 +45,9 @@ private extension TabBarFlow {
         Flows.use(
             homeFlow, galleryFlow, captureFlow,
             when: .ready
-        ) { [unowned self] (root1: UINavigationController, root2: UINavigationController, root3: UINavigationController) in
+        ) { [unowned self] (root1: UINavigationController,
+                            root2: UINavigationController,
+                            root3: UINavigationController) in
 
             let homeItem = UITabBarItem(
                 title: "홈",

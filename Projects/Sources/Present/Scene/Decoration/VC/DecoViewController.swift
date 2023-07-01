@@ -18,11 +18,12 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     }
 
     private let oneFrameView = OneFrameView().then {
+        $0.contentMode = .scaleAspectFit
         $0.isHidden = true
     }
 
     private let oneFrameButton = ButtonContainer()
-    
+
     private let fourFrameView = FourFrameView().then {
         $0.isHidden = true
     }
@@ -31,29 +32,44 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         oneFrameButton.oneFrameButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.setMainImage()
-                print("dasd")
             }.disposed(by: disposeBag)
-        
+
         oneFrameButton.fourFrameButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.setFourImage()
-                print("dasd")
             }.disposed(by: disposeBag)
     }
 
     private func setMainImage() {
         oneFrameView.isHidden = false
         fourFrameView.isHidden = true
-        oneFrameView.setImage(img: CheezeAsset.Image.sample.image)
+
+        viewModel.selectedPhotos// 첫 번째 이미지만 받아오도록 함
+            .subscribe(onNext: { [weak self] images in
+                guard let firstImage = images.first else { return }
+                self?.oneFrameView.setImage(img: firstImage)
+            })
+            .disposed(by: disposeBag)
     }
 
     private func setFourImage() {
         fourFrameView.isHidden = false
         oneFrameView.isHidden = true
-        fourFrameView.setImage(img1: CheezeAsset.Image.sample.image,
-                               img2: CheezeAsset.Image.sample2.image,
-                               img3: CheezeAsset.Image.sample3.image,
-                               img4: CheezeAsset.Image.sample4.image)
+
+        viewModel.selectedPhotos
+            .subscribe(onNext: { [weak self] images in
+                guard images.count >= 4 else {
+                    return
+                }
+
+                self?.fourFrameView.setImage(img1: images[0], img2: images[1], img3: images[2], img4: images[3])
+            })
+            .disposed(by: disposeBag)
+    }
+
+    private func bindViewMode() {
+        let input = DecoViewModel.Input()
+        let output = viewModel.transVC(input: input)
     }
 
     override func configureVC() {
@@ -88,7 +104,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
             $0.height.equalTo(70)
             $0.width.equalTo(226)
         }
-        
+
         fourFrameView.snp.makeConstraints {
             $0.center.equalTo(mainImageView)
         }

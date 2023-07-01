@@ -1,13 +1,25 @@
 import UIKit
 
 final class FourFrameView: UIView {
-    private let firstImageView = UIImageView()
+    private let firstImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
 
-    private let secondImageView = UIImageView()
+    private let secondImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
 
-    private let thirdImageView = UIImageView()
+    private let thirdImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
 
-    private let fourImageView = UIImageView()
+    private let fourImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFill
+        $0.clipsToBounds = true
+    }
 
     // MARK: - LifeCycles
     override init(frame: CGRect) {
@@ -61,7 +73,7 @@ final class FourFrameView: UIView {
         }
     }
 
-    func setImage(img1: UIImage, img2: UIImage, img3: UIImage, img4: UIImage) {
+    func setImage(img1: UIImage, img2: UIImage?, img3: UIImage?, img4: UIImage?) {
         firstImageView.image = img1
         secondImageView.image = img2
         thirdImageView.image = img3
