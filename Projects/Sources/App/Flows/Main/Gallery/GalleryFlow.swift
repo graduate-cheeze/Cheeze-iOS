@@ -30,6 +30,8 @@ class GalleryFlow: Flow {
         switch step {
         case .galleryIsRequired:
             return galleryIsRequired()
+        case .decoIsRequired:
+            return decoIsRequired()
 
         default:
             return .none
@@ -39,6 +41,13 @@ class GalleryFlow: Flow {
     private func galleryIsRequired() -> FlowContributors {
         let viewModel = GalleryViewModel()
         let viewController = GalleryViewController(viewModel)
+        self.rootViewController.pushViewController(viewController, animated: true)
+        return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
+    }
+
+    private func decoIsRequired() -> FlowContributors {
+        let viewModel = DecoViewModel()
+        let viewController = DecoViewController(viewModel)
         self.rootViewController.pushViewController(viewController, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
     }

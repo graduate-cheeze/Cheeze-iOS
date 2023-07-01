@@ -58,6 +58,7 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
         navigationItem.rightBarButtonItem = completeButton
 
         bind()
+        bindViewModel()
     }
 
     private func bind() {
@@ -65,10 +66,16 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
             .map { $0.isEmpty } // 선택된 사진이 없는 경우
             .bind(to: completeButton.rx.isHidden) // 확인 버튼의 isHidden 속성에 바인딩
             .disposed(by: disposeBag)
-
     }
 
-    func loadGallery() {
+    private func bindViewModel() {
+        let input = GalleryViewModel.Input(
+            completeButtonTap: completeButton.rx.tap.asObservable()
+        )
+        let output = viewModel.transVC(input: input)
+    }
+
+    private func loadGallery() {
         let fetchOptions = PHFetchOptions()
 
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
