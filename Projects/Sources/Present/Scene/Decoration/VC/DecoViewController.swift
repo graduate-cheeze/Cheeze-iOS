@@ -4,8 +4,6 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private let menuType: [String] = ["스티커", "프레임"]
 
     private let mainImageView = UIImageView().then {
-        $0.contentMode = .scaleAspectFit
-        $0.image = CheezeAsset.Image.sample.image
         $0.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
     }
 
@@ -17,22 +15,104 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         $0.setTitleTextAttributes([NSAttributedString.Key.foregroundColor:
                                     UIColor.black,
                                    .font: CheezeFontFamily.Pretendard.bold.font(size: 15)], for: .selected)
+        $0.addTarget(self, action: #selector(segmentedControlValueChanged), for: .valueChanged)
     }
 
-    private let oneFrameButton = NormalButtonFrame().then {
-        $0.setImage(img: CheezeAsset.Image.oneFrame.image)
+    private let oneFrameView = OneFrameView().then {
+        $0.contentMode = .scaleAspectFit
+        $0.isHidden = true
     }
 
-    private let fourFrameButton = NormalButtonFrame().then {
-        $0.setImage(img: CheezeAsset.Image.fourFrame.image)
+    private let fourFrameView = FourFrameView().then {
+        $0.isHidden = true
+    }
+
+    private let oneFrameButton = ButtonContainer()
+
+    private func oneFrameButtonDidTap() {
+        oneFrameButton.oneFrameButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.setOneImage()
+            }.disposed(by: disposeBag)
+
+        oneFrameButton.fourFrameButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.setFourImage()
+            }.disposed(by: disposeBag)
+
+        oneFrameButton.xButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.setMainImage()
+            }.disposed(by: disposeBag)
+    }
+
+    private func setMainImage() {
+        oneFrameView.isHidden = true
+        fourFrameView.isHidden = true
+
+        viewModel.selectedPhotos
+            .subscribe(onNext: { [weak self] images in
+                guard let firstImage = images.first else { return }
+                self?.mainImageView.image = firstImage
+            })
+            .disposed(by: disposeBag)
+    }
+
+    private func setOneImage() {
+        oneFrameView.isHidden = false
+        fourFrameView.isHidden = true
+        mainImageView.image = .none
+
+        viewModel.selectedPhotos
+            .subscribe(onNext: { [weak self] images in
+                guard let firstImage = images.first else { return }
+                self?.oneFrameView.setImage(img: firstImage)
+            })
+            .disposed(by: disposeBag)
+    }
+
+    private func setFourImage() {
+        fourFrameView.isHidden = false
+        oneFrameView.isHidden = true
+        mainImageView.image = .none
+
+        viewModel.selectedPhotos
+            .subscribe(onNext: { [weak self] images in
+                guard images.count >= 4 else { return }
+                self?.fourFrameView.setImage(img1: images[0], img2: images[1], img3: images[2], img4: images[3])
+            })
+            .disposed(by: disposeBag)
+    }
+
+    @objc private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
+        let selectedIndex = sender.selectedSegmentIndex
+        if selectedIndex == 0 {
+            oneFrameButton.isHidden = true
+        } else if selectedIndex == 1 {
+            oneFrameButton.isHidden = false
+        }
+    }
+
+    private func bindViewMode() {
+        let input = DecoViewModel.Input()
+        let output = viewModel.transVC(input: input)
     }
 
     override func configureVC() {
         navigationItem.title = "1/10"
+        self.tabBarController?.tabBar.isHidden = true
+
+        menuTypeSegmentedControl.selectedSegmentIndex = 1
+        oneFrameButtonDidTap()
+        setMainImage()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = false
     }
 
     override func addView() {
-        view.addSubviews(mainImageView, menuTypeSegmentedControl, oneFrameButton, fourFrameButton)
+        view.addSubviews(mainImageView, oneFrameView, fourFrameView, menuTypeSegmentedControl, oneFrameButton)
     }
 
     override func setLayout() {
@@ -42,6 +122,10 @@ final class DecoViewController: BaseVC<DecoViewModel> {
             $0.height.equalToSuperview().dividedBy(1.6)
         }
 
+        oneFrameView.snp.makeConstraints {
+            $0.center.equalTo(mainImageView)
+        }
+
         menuTypeSegmentedControl.snp.makeConstraints {
             $0.top.equalTo(mainImageView.snp.bottom).offset(20)
             $0.centerX.equalToSuperview()
@@ -49,15 +133,14 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         }
 
         oneFrameButton.snp.makeConstraints {
-            $0.size.equalTo(70)
             $0.top.equalTo(menuTypeSegmentedControl.snp.bottom).offset(16)
             $0.leading.equalToSuperview().offset(74)
+            $0.height.equalTo(70)
+            $0.width.equalTo(226)
         }
-        
-        fourFrameButton.snp.makeConstraints {
-            $0.size.equalTo(70)
-            $0.top.equalTo(menuTypeSegmentedControl.snp.bottom).offset(16)
-            $0.leading.equalTo(oneFrameButton.snp.trailing).offset(8)
+
+        fourFrameView.snp.makeConstraints {
+            $0.center.equalTo(mainImageView)
         }
     }
 }

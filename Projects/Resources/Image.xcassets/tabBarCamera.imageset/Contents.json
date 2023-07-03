@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "icon=Camera.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

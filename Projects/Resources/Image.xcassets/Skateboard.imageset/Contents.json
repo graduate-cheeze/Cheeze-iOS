@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Skateboard.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

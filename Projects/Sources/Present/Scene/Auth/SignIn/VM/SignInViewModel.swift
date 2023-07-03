@@ -26,6 +26,6 @@ final class SignInViewModel: BaseViewModel, Stepper {
     }
 
     private func pushDecoVC() {
-        self.steps.accept(CZStep.decoIsRequired)
+        self.steps.accept(CZStep.tabBarIsRequired)
     }
 }

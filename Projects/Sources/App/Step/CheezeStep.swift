@@ -7,6 +7,7 @@
 //
 
 import RxFlow
+import Photos
 
 enum CZStep: Step {
 
@@ -15,6 +16,11 @@ enum CZStep: Step {
     // MARK: - Auth
     case signUpIsRequired
     case signInIsRequired
-    
-    case decoIsRequired
+
+    case tabBarIsRequired
+
+    case decoIsRequired([PHAsset])
+    case galleryIsRequired
+    case captureIsRequired
+    case homeIsRequired
 }
