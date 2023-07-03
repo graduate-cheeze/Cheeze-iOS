@@ -2,21 +2,25 @@ import UIKit
 
 final class FourFrameView: UIView {
     private let firstImageView = UIImageView().then {
+        $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
     }
 
     private let secondImageView = UIImageView().then {
+        $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
     }
 
     private let thirdImageView = UIImageView().then {
+        $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
     }
 
     private let fourImageView = UIImageView().then {
+        $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
     }
@@ -51,23 +55,27 @@ final class FourFrameView: UIView {
         }
 
         firstImageView.snp.makeConstraints {
-            $0.size.equalTo(150)
+            $0.width.equalToSuperview().dividedBy(2.29)
+            $0.height.equalToSuperview().dividedBy(2.65)
             $0.leading.top.equalToSuperview().offset(20)
         }
 
         secondImageView.snp.makeConstraints {
-            $0.size.equalTo(150)
+            $0.width.equalToSuperview().dividedBy(2.29)
+            $0.height.equalToSuperview().dividedBy(2.65)
             $0.trailing.top.equalToSuperview().inset(20)
         }
 
         thirdImageView.snp.makeConstraints {
-            $0.size.equalTo(150)
+            $0.width.equalToSuperview().dividedBy(2.29)
+            $0.height.equalToSuperview().dividedBy(2.65)
             $0.leading.equalTo(firstImageView.snp.leading)
             $0.top.equalTo(firstImageView.snp.bottom).offset(5)
         }
 
         fourImageView.snp.makeConstraints {
-            $0.size.equalTo(150)
+            $0.width.equalToSuperview().dividedBy(2.29)
+            $0.height.equalToSuperview().dividedBy(2.65)
             $0.trailing.equalTo(secondImageView.snp.trailing)
             $0.top.equalTo(secondImageView.snp.bottom).offset(5)
         }

@@ -55,5 +55,5 @@ class GalleryFlow: Flow {
         let viewController = DecoViewController(viewModel)
         self.rootViewController.pushViewController(viewController, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
-    }
+     }
 }

@@ -32,20 +32,38 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private func oneFrameButtonDidTap() {
         oneFrameButton.oneFrameButton.rx.tap
             .bind(with: self) { owner, _ in
-                owner.setMainImage()
+                owner.setOneImage()
             }.disposed(by: disposeBag)
 
         oneFrameButton.fourFrameButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.setFourImage()
             }.disposed(by: disposeBag)
+
+        oneFrameButton.xButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.setMainImage()
+            }.disposed(by: disposeBag)
     }
 
     private func setMainImage() {
-        oneFrameView.isHidden = false
+        oneFrameView.isHidden = true
         fourFrameView.isHidden = true
 
-        viewModel.selectedPhotos// 첫 번째 이미지만 받아오도록 함
+        viewModel.selectedPhotos
+            .subscribe(onNext: { [weak self] images in
+                guard let firstImage = images.first else { return }
+                self?.mainImageView.image = firstImage
+            })
+            .disposed(by: disposeBag)
+    }
+
+    private func setOneImage() {
+        oneFrameView.isHidden = false
+        fourFrameView.isHidden = true
+        mainImageView.image = .none
+
+        viewModel.selectedPhotos
             .subscribe(onNext: { [weak self] images in
                 guard let firstImage = images.first else { return }
                 self?.oneFrameView.setImage(img: firstImage)
@@ -56,18 +74,16 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private func setFourImage() {
         fourFrameView.isHidden = false
         oneFrameView.isHidden = true
+        mainImageView.image = .none
 
         viewModel.selectedPhotos
             .subscribe(onNext: { [weak self] images in
-                guard images.count >= 4 else {
-                    return
-                }
-
+                guard images.count >= 4 else { return }
                 self?.fourFrameView.setImage(img1: images[0], img2: images[1], img3: images[2], img4: images[3])
             })
             .disposed(by: disposeBag)
     }
-    
+
     @objc private func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         let selectedIndex = sender.selectedSegmentIndex
         if selectedIndex == 0 {
@@ -84,9 +100,15 @@ final class DecoViewController: BaseVC<DecoViewModel> {
 
     override func configureVC() {
         navigationItem.title = "1/10"
+        self.tabBarController?.tabBar.isHidden = true
 
         menuTypeSegmentedControl.selectedSegmentIndex = 1
         oneFrameButtonDidTap()
+        setMainImage()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = false
     }
 
     override func addView() {
