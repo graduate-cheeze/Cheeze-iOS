@@ -1,9 +1,13 @@
 import UIKit
+import RxSwift
+import RxCocoa
+import RxRelay
 
 final class DecoViewController: BaseVC<DecoViewModel> {
     private let menuType: [String] = ["스티커", "프레임"]
 
     private let mainImageView = UIImageView().then {
+        $0.contentMode = .scaleAspectFit
         $0.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
     }
 
@@ -28,6 +32,28 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     }
 
     private let oneFrameButton = ButtonContainer()
+
+    private let flowLayout = UICollectionViewFlowLayout().then {
+        $0.scrollDirection = .horizontal
+        $0.minimumLineSpacing = 8
+    }
+
+    private lazy var stickerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout).then {
+        $0.showsHorizontalScrollIndicator = false
+        $0.backgroundColor = .clear
+        $0.isScrollEnabled = true
+        $0.clipsToBounds = true
+        $0.register(StickerCollectionViewCell.self, forCellWithReuseIdentifier: StickerCollectionViewCell.identifier)
+        $0.isHidden = true
+    }
+    
+    private func bindCollectionView() {
+        viewModel.photosList
+            .bind(to: stickerCollectionView.rx.items(cellIdentifier: StickerCollectionViewCell.identifier, cellType: StickerCollectionViewCell.self)) { _ , photo, cell in
+                cell.stickerButtonView.setImage(img: photo)
+            }
+            .disposed(by: disposeBag)
+    }
 
     private func oneFrameButtonDidTap() {
         oneFrameButton.oneFrameButton.rx.tap
@@ -88,8 +114,10 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         let selectedIndex = sender.selectedSegmentIndex
         if selectedIndex == 0 {
             oneFrameButton.isHidden = true
+            stickerCollectionView.isHidden = false
         } else if selectedIndex == 1 {
             oneFrameButton.isHidden = false
+            stickerCollectionView.isHidden = true
         }
     }
 
@@ -101,10 +129,12 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     override func configureVC() {
         navigationItem.title = "1/10"
         self.tabBarController?.tabBar.isHidden = true
+        stickerCollectionView.delegate = self
 
         menuTypeSegmentedControl.selectedSegmentIndex = 1
         oneFrameButtonDidTap()
         setMainImage()
+        bindCollectionView()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -112,7 +142,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     }
 
     override func addView() {
-        view.addSubviews(mainImageView, oneFrameView, fourFrameView, menuTypeSegmentedControl, oneFrameButton)
+        view.addSubviews(mainImageView, oneFrameView, fourFrameView, menuTypeSegmentedControl, oneFrameButton, stickerCollectionView)
     }
 
     override func setLayout() {
@@ -142,5 +172,26 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         fourFrameView.snp.makeConstraints {
             $0.center.equalTo(mainImageView)
         }
+
+        stickerCollectionView.snp.makeConstraints {
+            $0.top.equalTo(menuTypeSegmentedControl.snp.bottom).offset(16)
+            $0.leading.equalToSuperview().offset(10)
+            $0.trailing.equalToSuperview()
+            $0.height.equalTo(70)
+        }
+    }
+}
+
+extension DecoViewController: UICollectionViewDelegate,
+                              UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = 70
+        let height = 70
+        return CGSize(width: width, height: height)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     }
 }
