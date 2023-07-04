@@ -6,11 +6,14 @@ import Kingfisher
 final class StickerCollectionViewCell: UICollectionViewCell {
     static let identifier = "StickerCell"
 
-    let stickerButtonView = NormalButtonFrame()
+    let stickerButtonView = NormalButtonFrame().then {
+        $0.isEnabled = false
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
+        self.backgroundColor = .red
         addView()
         setLayout()
     }

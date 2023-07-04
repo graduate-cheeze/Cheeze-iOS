@@ -6,6 +6,8 @@ import RxRelay
 final class DecoViewController: BaseVC<DecoViewModel> {
     private let menuType: [String] = ["스티커", "프레임"]
 
+    private var stickerObjectView: StickerObjectView?
+
     private let mainImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
@@ -39,6 +41,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     }
 
     private lazy var stickerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout).then {
+        $0.isUserInteractionEnabled = true
         $0.showsHorizontalScrollIndicator = false
         $0.backgroundColor = .clear
         $0.isScrollEnabled = true
@@ -46,10 +49,19 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         $0.register(StickerCollectionViewCell.self, forCellWithReuseIdentifier: StickerCollectionViewCell.identifier)
         $0.isHidden = true
     }
-    
+
+    private func mainImageViewTapped(img: UIImage) {
+        stickerObjectView = StickerObjectView(image: img)
+        stickerObjectView?.delegate = self
+
+        mainImageView.addSubview(stickerObjectView!)
+    }
+
     private func bindCollectionView() {
         viewModel.photosList
-            .bind(to: stickerCollectionView.rx.items(cellIdentifier: StickerCollectionViewCell.identifier, cellType: StickerCollectionViewCell.self)) { _ , photo, cell in
+            .bind(to: stickerCollectionView.rx.items(
+                cellIdentifier: StickerCollectionViewCell.identifier,
+                cellType: StickerCollectionViewCell.self)) { _, photo, cell in
                 cell.stickerButtonView.setImage(img: photo)
             }
             .disposed(by: disposeBag)
@@ -142,7 +154,9 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     }
 
     override func addView() {
-        view.addSubviews(mainImageView, oneFrameView, fourFrameView, menuTypeSegmentedControl, oneFrameButton, stickerCollectionView)
+        view.addSubviews(mainImageView, oneFrameView,
+                         fourFrameView, menuTypeSegmentedControl,
+                         oneFrameButton, stickerCollectionView)
     }
 
     override func setLayout() {
@@ -193,5 +207,36 @@ extension DecoViewController: UICollectionViewDelegate,
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("HI")
+    }
+}
+
+extension DecoViewController: StickerObjectViewDelegate {
+    func stickerObjectViewDidPan(_ view: StickerObjectView, _ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: mainImageView)
+
+        // Move the sticker object view according to the pan gesture translation
+        view.center.x += translation.x
+        view.center.y += translation.y
+
+        gesture.setTranslation(.zero, in: mainImageView)
+    }
+
+    func stickerObjectViewDidRotate(_ view: StickerObjectView, _ gesture: UIRotationGestureRecognizer) {
+        // Rotate the sticker object view according to the rotation gesture
+        view.transform = view.transform.rotated(by: gesture.rotation)
+        gesture.rotation = 0
+    }
+
+    func stickerObjectViewDidPinch(_ view: StickerObjectView, _ gesture: UIPinchGestureRecognizer) {
+        // Scale the sticker object view according to the pinch gesture scale
+        view.transform = view.transform.scaledBy(x: gesture.scale, y: gesture.scale)
+        gesture.scale = 1
+    }
+
+    func stickerObjectViewDidDoubleTap(_ view: StickerObjectView) {
+        // Remove the sticker object view from the main image view
+        view.removeFromSuperview()
+        stickerObjectView = nil
     }
 }
