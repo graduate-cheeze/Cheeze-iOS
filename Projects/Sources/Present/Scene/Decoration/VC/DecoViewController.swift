@@ -53,10 +53,9 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private func showStickerObjectView(image: UIImage) {
         // stickerObjectView 생성
         stickerObjectView = StickerObjectView(image: image)
-        setupGestures(sticker: stickerObjectView!)
-        
+
         view.addSubview(stickerObjectView!)
-        
+
         stickerObjectView?.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.size.equalTo(70)
@@ -165,11 +164,6 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         oneFrameButtonDidTap()
         setMainImage()
         bindCollectionView()
-
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(mainImageTapGestureHandler(_:)))
-        tapGestureRecognizer.delegate = self
-        mainImageView.isUserInteractionEnabled = true
-        mainImageView.addGestureRecognizer(tapGestureRecognizer)
     }
     @objc private func mainImageTapGestureHandler(_ gesture: UITapGestureRecognizer) {
         print("Main image tapped")
@@ -225,43 +219,18 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private var pinchGesture: UIPinchGestureRecognizer!
     private var doubleTapGesture: UITapGestureRecognizer!
 
-    private func setupGestures(sticker: UIView) {
-        // Pan gesture
-        panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
-        sticker.addGestureRecognizer(panGesture)
-
-        // Rotation gesture
-        rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(rotationGestureHandler(_:)))
-        self.stickerObjectView!.addGestureRecognizer(rotationGesture)
-
-        // Pinch gesture
-        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchGestureHandler(_:)))
-        self.stickerObjectView!.addGestureRecognizer(pinchGesture)
-
-        // Double tap gesture
-        doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(doubleTapGestureHandler(_:)))
-        doubleTapGesture.numberOfTapsRequired = 2
-        sticker.addGestureRecognizer(doubleTapGesture)
-        
-        // Enable user interaction
-        sticker.isUserInteractionEnabled = true
-        
-        print("등록")
-        print("\(sticker)입니다")
-    }
-
-    @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: mainImageView)
-
-        let changedX = mainImageView.center.x + translation.x
-        let changedY = mainImageView.center.y + translation.y
-
-        mainImageView.center = CGPoint(x: changedX, y: changedY)
-        
-        print("move")
-        
-        gesture.setTranslation(.zero, in: mainImageView)
-    }
+//    @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
+//        let translation = gesture.translation(in: stickerObjectView!)
+//
+//        let changedX = stickerObjectView!.center.x + translation.x
+//        let changedY = stickerObjectView!.center.y + translation.y
+//
+//        stickerObjectView!.center = CGPoint(x: changedX, y: changedY)
+//
+//        print("move")
+//
+//        gesture.setTranslation(.zero, in: stickerObjectView!)
+//    }
 
     @objc private func rotationGestureHandler(_ gesture: UIRotationGestureRecognizer) {
     }
@@ -285,9 +254,3 @@ extension DecoViewController: UICollectionViewDelegate,
     }
 }
 
-extension DecoViewController: UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        print("tap")
-        return true
-    }
-}

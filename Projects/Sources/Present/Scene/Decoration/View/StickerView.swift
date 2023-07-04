@@ -20,6 +20,7 @@ class StickerObjectView: UIImageView {
         self.image = image
         self.isUserInteractionEnabled = true
         self.frame = CGRect(x: 0, y: 0, width: 70, height: 70)
+        setupGestures()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -49,7 +50,16 @@ class StickerObjectView: UIImageView {
     }
 
     @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
-        delegate?.stickerObjectViewDidPan(self, gesture)
+        let translation = gesture.translation(in: self)
+
+        let changedX = self.center.x + translation.x
+        let changedY = self.center.y + translation.y
+
+        self.center = CGPoint(x: changedX, y: changedY)
+
+        print("move")
+
+        gesture.setTranslation(.zero, in: self)
     }
 
     @objc private func rotationGestureHandler(_ gesture: UIRotationGestureRecognizer) {
