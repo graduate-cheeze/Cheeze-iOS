@@ -50,11 +50,18 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         $0.isHidden = true
     }
 
-    private func mainImageViewTapped(img: UIImage) {
-        stickerObjectView = StickerObjectView(image: img)
-        stickerObjectView?.delegate = self
-
-        mainImageView.addSubview(stickerObjectView!)
+    private func showStickerObjectView(image: UIImage) {
+        // stickerObjectView 생성
+        stickerObjectView = StickerObjectView(image: image)
+        setupGestures(sticker: stickerObjectView!)
+        
+        view.addSubview(stickerObjectView!)
+        
+        stickerObjectView?.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.size.equalTo(70)
+        }
+        print("ㅋㅋ")
     }
 
     private func bindCollectionView() {
@@ -64,6 +71,16 @@ final class DecoViewController: BaseVC<DecoViewModel> {
                 cellType: StickerCollectionViewCell.self)) { _, photo, cell in
                 cell.stickerButtonView.setImage(img: photo)
             }
+            .disposed(by: disposeBag)
+
+        stickerCollectionView.rx.itemSelected
+            .subscribe(onNext: { [weak self] indexPath in
+                guard let cell = self!.stickerCollectionView.cellForItem(at: indexPath) as?
+                        StickerCollectionViewCell else { return }
+                guard let selectedImage = cell.stickerButtonView.buttonIconImageView.image else { return }
+
+                self?.showStickerObjectView(image: selectedImage)
+            })
             .disposed(by: disposeBag)
     }
 
@@ -138,6 +155,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         let output = viewModel.transVC(input: input)
     }
 
+    // MARK: - ConfigureVC
     override func configureVC() {
         navigationItem.title = "1/10"
         self.tabBarController?.tabBar.isHidden = true
@@ -147,6 +165,14 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         oneFrameButtonDidTap()
         setMainImage()
         bindCollectionView()
+
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(mainImageTapGestureHandler(_:)))
+        tapGestureRecognizer.delegate = self
+        mainImageView.isUserInteractionEnabled = true
+        mainImageView.addGestureRecognizer(tapGestureRecognizer)
+    }
+    @objc private func mainImageTapGestureHandler(_ gesture: UITapGestureRecognizer) {
+        print("Main image tapped")
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -194,6 +220,58 @@ final class DecoViewController: BaseVC<DecoViewModel> {
             $0.height.equalTo(70)
         }
     }
+    private var panGesture: UIPanGestureRecognizer!
+    private var rotationGesture: UIRotationGestureRecognizer!
+    private var pinchGesture: UIPinchGestureRecognizer!
+    private var doubleTapGesture: UITapGestureRecognizer!
+
+    private func setupGestures(sticker: UIView) {
+        // Pan gesture
+        panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
+        sticker.addGestureRecognizer(panGesture)
+
+        // Rotation gesture
+        rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(rotationGestureHandler(_:)))
+        self.stickerObjectView!.addGestureRecognizer(rotationGesture)
+
+        // Pinch gesture
+        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(pinchGestureHandler(_:)))
+        self.stickerObjectView!.addGestureRecognizer(pinchGesture)
+
+        // Double tap gesture
+        doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(doubleTapGestureHandler(_:)))
+        doubleTapGesture.numberOfTapsRequired = 2
+        sticker.addGestureRecognizer(doubleTapGesture)
+        
+        // Enable user interaction
+        sticker.isUserInteractionEnabled = true
+        
+        print("등록")
+        print("\(sticker)입니다")
+    }
+
+    @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: mainImageView)
+
+        let changedX = mainImageView.center.x + translation.x
+        let changedY = mainImageView.center.y + translation.y
+
+        mainImageView.center = CGPoint(x: changedX, y: changedY)
+        
+        print("move")
+        
+        gesture.setTranslation(.zero, in: mainImageView)
+    }
+
+    @objc private func rotationGestureHandler(_ gesture: UIRotationGestureRecognizer) {
+    }
+
+    @objc private func pinchGestureHandler(_ gesture: UIPinchGestureRecognizer) {
+    }
+
+    @objc private func doubleTapGestureHandler(_ gesture: UITapGestureRecognizer) {
+        print("double")
+    }
 }
 
 extension DecoViewController: UICollectionViewDelegate,
@@ -205,38 +283,11 @@ extension DecoViewController: UICollectionViewDelegate,
         let height = 70
         return CGSize(width: width, height: height)
     }
-
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("HI")
-    }
 }
 
-extension DecoViewController: StickerObjectViewDelegate {
-    func stickerObjectViewDidPan(_ view: StickerObjectView, _ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: mainImageView)
-
-        // Move the sticker object view according to the pan gesture translation
-        view.center.x += translation.x
-        view.center.y += translation.y
-
-        gesture.setTranslation(.zero, in: mainImageView)
-    }
-
-    func stickerObjectViewDidRotate(_ view: StickerObjectView, _ gesture: UIRotationGestureRecognizer) {
-        // Rotate the sticker object view according to the rotation gesture
-        view.transform = view.transform.rotated(by: gesture.rotation)
-        gesture.rotation = 0
-    }
-
-    func stickerObjectViewDidPinch(_ view: StickerObjectView, _ gesture: UIPinchGestureRecognizer) {
-        // Scale the sticker object view according to the pinch gesture scale
-        view.transform = view.transform.scaledBy(x: gesture.scale, y: gesture.scale)
-        gesture.scale = 1
-    }
-
-    func stickerObjectViewDidDoubleTap(_ view: StickerObjectView) {
-        // Remove the sticker object view from the main image view
-        view.removeFromSuperview()
-        stickerObjectView = nil
+extension DecoViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        print("tap")
+        return true
     }
 }

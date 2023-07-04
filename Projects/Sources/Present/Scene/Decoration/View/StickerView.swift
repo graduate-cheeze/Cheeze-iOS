@@ -18,7 +18,8 @@ class StickerObjectView: UIImageView {
     init(image: UIImage) {
         super.init(frame: .zero)
         self.image = image
-        setupGestures()
+        self.isUserInteractionEnabled = true
+        self.frame = CGRect(x: 0, y: 0, width: 70, height: 70)
     }
 
     required init?(coder aDecoder: NSCoder) {
