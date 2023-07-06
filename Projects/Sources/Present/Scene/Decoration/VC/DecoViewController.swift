@@ -6,7 +6,7 @@ import RxRelay
 final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelegate {
     private let menuType: [String] = ["스티커", "프레임"]
 
-    private var stickerObjectView: StickerObjectView?
+    private var stickerObjectViews: [StickerObjectView] = []
 
     private let mainImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
@@ -51,44 +51,64 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         $0.isHidden = true
     }
 
+    private lazy var saveButton = UIButton().then {
+        $0.backgroundColor = .red
+        $0.addTarget(self, action: #selector(chooseSaveButtonClicked), for: .touchUpInside)
+    }
+
     private func showStickerObjectView(image: UIImage) {
         // stickerObjectView 생성
-        stickerObjectView = StickerObjectView(image: image)
-        mainImageView.addSubview(stickerObjectView!)
+        let stickerObjectView = StickerObjectView(image: image)
+        mainImageView.addSubview(stickerObjectView)
 
-        stickerObjectView?.center = mainImageView.center
-        stickerObjectView?.bounds.size = CGSize(width: 70, height: 70)
+        stickerObjectView.center = mainImageView.center
+        stickerObjectView.bounds.size = CGSize(width: 70, height: 70)
 
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
         panGestureRecognizer.delegate = self
-        stickerObjectView?.addGestureRecognizer(panGestureRecognizer)
+        stickerObjectView.addGestureRecognizer(panGestureRecognizer)
+
+        // 스티커 객체 뷰 배열에 추가
+        stickerObjectViews.append(stickerObjectView)
         print("ㅋㅋ")
     }
 
-    @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: stickerObjectView)
+    @objc private func panGestureHandler(_ gestureRecognizer: UIPanGestureRecognizer) {
+        guard let stickerObjectView = gestureRecognizer.view as? StickerObjectView else { return }
 
-        var center = stickerObjectView?.center ?? CGPoint.zero
-        center.x += translation.x
-        center.y += translation.y
+        // 스티커 객체 뷰 배열에서 현재 제스처 이벤트를 받고 있는 스티커 객체 뷰 식별
+        if let index = stickerObjectViews.firstIndex(of: stickerObjectView) {
+            let translation = gestureRecognizer.translation(in: mainImageView)
 
-        // Limit the movement of stickerObjectView to mainImageView bounds
-        let minX = stickerObjectView?.bounds.width ?? 0 / 2
-        let maxX = mainImageView.bounds.width - (stickerObjectView?.bounds.width ?? 0) / 2
-        let minY = stickerObjectView?.bounds.height ?? 0 / 2
-        let maxY = mainImageView.bounds.height - (stickerObjectView?.bounds.height ?? 0) / 2
+            // 스티커 객체 뷰 이동 처리
+            var center = stickerObjectView.center
+            center.x += translation.x
+            center.y += translation.y
 
-        center.x = max(minX, min(maxX, center.x))
-        center.y = max(minY, min(maxY, center.y))
+            // Limit the movement of stickerObjectView to mainImageView bounds
+            let minX = stickerObjectView.bounds.width
+            let maxX = mainImageView.bounds.width - (stickerObjectView.bounds.width) / 2
+            let minY = stickerObjectView.bounds.height
+            let maxY = mainImageView.bounds.height - (stickerObjectView.bounds.height) / 2
 
-        stickerObjectView?.center = center
-        gesture.setTranslation(.zero, in: stickerObjectView)
+            center.x = max(minX, min(maxX, center.x))
+            center.y = max(minY, min(maxY, center.y))
+
+            stickerObjectView.center = center
+            gestureRecognizer.setTranslation(.zero, in: stickerObjectView)
+        }
     }
 
-    // ...
-
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith
+                           otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
+    }
+
+    @objc private func chooseSaveButtonClicked(sender: UIButton) {
+        // 사진 저장 코드
+        let saveImage = mainImageView.asImage()
+        UIImageWriteToSavedPhotosAlbum(saveImage, self, nil, nil)
+        print("save")
     }
 
     private func bindCollectionView() {
@@ -204,7 +224,7 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
     override func addView() {
         view.addSubviews(mainImageView, oneFrameView,
                          fourFrameView, menuTypeSegmentedControl,
-                         oneFrameButton, stickerCollectionView)
+                         oneFrameButton, stickerCollectionView, saveButton)
     }
 
     override func setLayout() {
@@ -240,6 +260,13 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
             $0.leading.equalToSuperview().offset(10)
             $0.trailing.equalToSuperview()
             $0.height.equalTo(70)
+        }
+
+        saveButton.snp.makeConstraints {
+            $0.top.equalTo(menuTypeSegmentedControl.snp.top)
+            $0.leading.equalTo(menuTypeSegmentedControl.snp.trailing).offset(10)
+            $0.height.equalTo(30)
+            $0.width.equalTo(30)
         }
     }
 }
