@@ -1,15 +1,6 @@
 import UIKit
 
-protocol StickerObjectViewDelegate: AnyObject {
-    func stickerObjectViewDidPan(_ view: StickerObjectView, _ gesture: UIPanGestureRecognizer)
-    func stickerObjectViewDidRotate(_ view: StickerObjectView, _ gesture: UIRotationGestureRecognizer)
-    func stickerObjectViewDidPinch(_ view: StickerObjectView, _ gesture: UIPinchGestureRecognizer)
-    func stickerObjectViewDidDoubleTap(_ view: StickerObjectView)
-}
-
 class StickerObjectView: UIImageView {
-    weak var delegate: StickerObjectViewDelegate?
-
     private var panGesture: UIPanGestureRecognizer!
     private var rotationGesture: UIRotationGestureRecognizer!
     private var pinchGesture: UIPinchGestureRecognizer!
@@ -28,10 +19,6 @@ class StickerObjectView: UIImageView {
     }
 
     private func setupGestures() {
-        // Pan gesture
-        panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
-        self.addGestureRecognizer(panGesture)
-
         // Rotation gesture
         rotationGesture = UIRotationGestureRecognizer(target: self, action: #selector(rotationGestureHandler(_:)))
         self.addGestureRecognizer(rotationGesture)
@@ -49,7 +36,7 @@ class StickerObjectView: UIImageView {
         self.isUserInteractionEnabled = true
     }
 
-    @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
+    @objc func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: self)
 
         let changedX = self.center.x + translation.x
@@ -63,14 +50,13 @@ class StickerObjectView: UIImageView {
     }
 
     @objc private func rotationGestureHandler(_ gesture: UIRotationGestureRecognizer) {
-        delegate?.stickerObjectViewDidRotate(self, gesture)
     }
 
     @objc private func pinchGestureHandler(_ gesture: UIPinchGestureRecognizer) {
-        delegate?.stickerObjectViewDidPinch(self, gesture)
     }
 
     @objc private func doubleTapGestureHandler(_ gesture: UITapGestureRecognizer) {
-        delegate?.stickerObjectViewDidDoubleTap(self)
+        self.removeFromSuperview()
+        print("double")
     }
 }

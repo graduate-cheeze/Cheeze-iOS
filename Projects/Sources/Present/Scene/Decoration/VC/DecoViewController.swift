@@ -3,7 +3,7 @@ import RxSwift
 import RxCocoa
 import RxRelay
 
-final class DecoViewController: BaseVC<DecoViewModel> {
+final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelegate {
     private let menuType: [String] = ["스티커", "프레임"]
 
     private var stickerObjectView: StickerObjectView?
@@ -11,6 +11,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private let mainImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
+        $0.isUserInteractionEnabled = true
     }
 
     private lazy var menuTypeSegmentedControl = UISegmentedControl(items: menuType).then {
@@ -53,14 +54,41 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private func showStickerObjectView(image: UIImage) {
         // stickerObjectView 생성
         stickerObjectView = StickerObjectView(image: image)
+        mainImageView.addSubview(stickerObjectView!)
 
-        view.addSubview(stickerObjectView!)
+        stickerObjectView?.center = mainImageView.center
+        stickerObjectView?.bounds.size = CGSize(width: 70, height: 70)
 
-        stickerObjectView?.snp.makeConstraints {
-            $0.center.equalToSuperview()
-            $0.size.equalTo(70)
-        }
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
+        panGestureRecognizer.delegate = self
+        stickerObjectView?.addGestureRecognizer(panGestureRecognizer)
         print("ㅋㅋ")
+    }
+
+    @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
+        let translation = gesture.translation(in: stickerObjectView)
+
+        var center = stickerObjectView?.center ?? CGPoint.zero
+        center.x += translation.x
+        center.y += translation.y
+
+        // Limit the movement of stickerObjectView to mainImageView bounds
+        let minX = stickerObjectView?.bounds.width ?? 0 / 2
+        let maxX = mainImageView.bounds.width - (stickerObjectView?.bounds.width ?? 0) / 2
+        let minY = stickerObjectView?.bounds.height ?? 0 / 2
+        let maxY = mainImageView.bounds.height - (stickerObjectView?.bounds.height ?? 0) / 2
+
+        center.x = max(minX, min(maxX, center.x))
+        center.y = max(minY, min(maxY, center.y))
+
+        stickerObjectView?.center = center
+        gesture.setTranslation(.zero, in: stickerObjectView)
+    }
+
+    // ...
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
     }
 
     private func bindCollectionView() {
@@ -214,33 +242,6 @@ final class DecoViewController: BaseVC<DecoViewModel> {
             $0.height.equalTo(70)
         }
     }
-    private var panGesture: UIPanGestureRecognizer!
-    private var rotationGesture: UIRotationGestureRecognizer!
-    private var pinchGesture: UIPinchGestureRecognizer!
-    private var doubleTapGesture: UITapGestureRecognizer!
-
-//    @objc private func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
-//        let translation = gesture.translation(in: stickerObjectView!)
-//
-//        let changedX = stickerObjectView!.center.x + translation.x
-//        let changedY = stickerObjectView!.center.y + translation.y
-//
-//        stickerObjectView!.center = CGPoint(x: changedX, y: changedY)
-//
-//        print("move")
-//
-//        gesture.setTranslation(.zero, in: stickerObjectView!)
-//    }
-
-    @objc private func rotationGestureHandler(_ gesture: UIRotationGestureRecognizer) {
-    }
-
-    @objc private func pinchGestureHandler(_ gesture: UIPinchGestureRecognizer) {
-    }
-
-    @objc private func doubleTapGestureHandler(_ gesture: UITapGestureRecognizer) {
-        print("double")
-    }
 }
 
 extension DecoViewController: UICollectionViewDelegate,
@@ -253,4 +254,3 @@ extension DecoViewController: UICollectionViewDelegate,
         return CGSize(width: width, height: height)
     }
 }
-
