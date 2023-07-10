@@ -1,35 +1,50 @@
 import UIKit
 
 final class FourFrameView: UIView {
-    private let firstImageView = UIImageView().then {
+    let firstImageView = UIImageView().then {
         $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
+        $0.layer.cornerRadius = 0
+        $0.layer.maskedCorners = .layerMinXMinYCorner
     }
 
     private let secondImageView = UIImageView().then {
+        $0.layer.cornerRadius = 0
+        $0.layer.maskedCorners = .layerMaxXMinYCorner
+        $0.layer.masksToBounds = true
         $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
     }
 
     private let thirdImageView = UIImageView().then {
+        $0.layer.cornerRadius = 0
+        $0.layer.maskedCorners = .layerMinXMaxYCorner
+        $0.layer.masksToBounds = true
         $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
     }
 
     private let fourImageView = UIImageView().then {
+        $0.layer.cornerRadius = 0
+        $0.layer.maskedCorners = .layerMaxXMaxYCorner
+        $0.layer.masksToBounds = true
         $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
+    }
+
+    private let logoImageView = UIImageView().then {
+        $0.image = CheezeAsset.Image.logoImage.image
     }
 
     // MARK: - LifeCycles
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        self.addSubviews(firstImageView, secondImageView, thirdImageView, fourImageView)
+        self.addSubviews(firstImageView, secondImageView, thirdImageView, fourImageView, logoImageView)
         setLayout()
         configureUI()
     }
@@ -78,6 +93,13 @@ final class FourFrameView: UIView {
             $0.height.equalToSuperview().dividedBy(2.65)
             $0.trailing.equalTo(secondImageView.snp.trailing)
             $0.top.equalTo(secondImageView.snp.bottom).offset(5)
+        }
+        
+        logoImageView.snp.makeConstraints {
+            $0.width.equalTo(100)
+            $0.height.equalTo(70)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(10)
         }
     }
 

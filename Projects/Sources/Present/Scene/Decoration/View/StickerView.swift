@@ -53,6 +53,8 @@ class StickerObjectView: UIImageView {
     }
 
     @objc private func pinchGestureHandler(_ gesture: UIPinchGestureRecognizer) {
+        self.transform = self.transform.scaledBy(x: gesture.scale, y: gesture.scale)
+        gesture.scale = 1
     }
 
     @objc private func doubleTapGestureHandler(_ gesture: UITapGestureRecognizer) {

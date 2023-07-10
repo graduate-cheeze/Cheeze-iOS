@@ -1,4 +1,5 @@
 import UIKit
+import Photos
 import RxSwift
 import RxCocoa
 import RxRelay
@@ -9,7 +10,7 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
     private var stickerObjectViews: [StickerObjectView] = []
 
     private let imageBackgroundView = UIView().then {
-        $0.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
+        $0.backgroundColor = .red
         $0.isUserInteractionEnabled = true
     }
 
@@ -17,6 +18,7 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         $0.contentMode = .scaleAspectFit
         $0.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
         $0.isUserInteractionEnabled = true
+        $0.clipsToBounds = true
     }
 
     private lazy var menuTypeSegmentedControl = UISegmentedControl(items: menuType).then {
@@ -61,8 +63,8 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         $0.addTarget(self, action: #selector(chooseSaveButtonClicked), for: .touchUpInside)
     }
 
+    //MARK: - Create Sticker
     private func showStickerObjectView(image: UIImage) {
-        // stickerObjectView 생성
         let stickerObjectView = StickerObjectView(image: image)
         mainImageView.addSubview(stickerObjectView)
 
@@ -73,24 +75,8 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         panGestureRecognizer.delegate = self
         stickerObjectView.addGestureRecognizer(panGestureRecognizer)
 
-        // 스티커 객체 뷰 배열에 추가
         stickerObjectViews.append(stickerObjectView)
         print("ㅋㅋ")
-    }
-
-    private func updateMainImageViewSize() {
-        guard let image = mainImageView.image else { return }
-
-        let imageSize = image.size
-        let aspectRatio = imageSize.width / imageSize.height
-
-        // Calculate the new size based on the aspect ratio and the available width
-        let maxWidth = mainImageView.superview?.bounds.width ?? UIScreen.main.bounds.width
-        let newWidth = min(imageSize.width, maxWidth)
-        let newHeight = newWidth / aspectRatio
-
-        // Update the size of mainImageView
-        mainImageView.bounds.size = CGSize(width: newWidth, height: newHeight)
     }
 
     @objc private func panGestureHandler(_ gestureRecognizer: UIPanGestureRecognizer) {
@@ -126,9 +112,27 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
 
     @objc private func chooseSaveButtonClicked(sender: UIButton) {
         // 사진 저장 코드
-        let saveImage = mainImageView.asImage()
-        UIImageWriteToSavedPhotosAlbum(saveImage, self, nil, nil)
-        print("save")
+        let renderer = UIGraphicsImageRenderer(bounds: mainImageView.bounds)
+
+        let saveImage = renderer.image { context in
+            mainImageView.layer.render(in: context.cgContext)
+        }
+
+        if let pngData = saveImage.pngData() {
+            let photoLibrary = PHPhotoLibrary.shared()
+            photoLibrary.performChanges({
+                let request = PHAssetCreationRequest.forAsset()
+                request.addResource(with: .photo, data: pngData, options: nil)
+            }) { success, error in
+                if success {
+                    print("Saved image as PNG")
+                } else if let error = error {
+                    print("Error saving image: \(error.localizedDescription)")
+                }
+            }
+        } else {
+            print("Failed to convert image to PNG data")
+        }
     }
 
     private func bindCollectionView() {
@@ -176,7 +180,6 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
             .subscribe(onNext: { [weak self] images in
                 guard let firstImage = images.first else { return }
                 self?.mainImageView.image = firstImage
-                self?.updateMainImageViewSize()
             })
             .disposed(by: disposeBag)
     }
@@ -200,22 +203,24 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         fourFrameView.isHidden = false
         oneFrameView.isHidden = true
         mainImageView.image = .none
-
-        mainImageView.addSubview(fourFrameView)
+        mainImageView.layer.cornerRadius = 16
+        mainImageView.translatesAutoresizingMaskIntoConstraints = false
 
         fourFrameView.snp.makeConstraints {
             $0.center.equalToSuperview()
+        }
+
+        mainImageView.snp.remakeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(444)
+            $0.width.equalTo(375)
         }
 
         viewModel.selectedPhotos
             .subscribe(onNext: { [weak self] images in
                 guard images.count >= 4 else { return }
                 self?.fourFrameView.setImage(img1: images[0], img2: images[1], img3: images[2], img4: images[3])
-
-                guard let img = self?.fourFrameView.asImage() else { return print("no")}
-
-                // Set the image to mainImageView
-                self?.mainImageView.image = img
             })
             .disposed(by: disposeBag)
     }
@@ -253,11 +258,18 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
     }
 
     override func addView() {
-        view.addSubviews(mainImageView, oneFrameButton, menuTypeSegmentedControl,
-                         stickerCollectionView, saveButton)
+        view.addSubviews(imageBackgroundView, mainImageView, oneFrameButton,
+                         menuTypeSegmentedControl, stickerCollectionView, saveButton)
+        mainImageView.addSubview(fourFrameView)
     }
 
     override func setLayout() {
+        imageBackgroundView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.width.equalToSuperview()
+            $0.height.equalToSuperview().dividedBy(1.6)
+        }
+
         mainImageView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide)
             $0.width.equalToSuperview()
@@ -265,7 +277,7 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         }
 
         menuTypeSegmentedControl.snp.makeConstraints {
-            $0.top.equalTo(mainImageView.snp.bottom).offset(20)
+            $0.top.equalTo(imageBackgroundView.snp.bottom).offset(20)
             $0.centerX.equalToSuperview()
             $0.height.equalTo(48)
         }
