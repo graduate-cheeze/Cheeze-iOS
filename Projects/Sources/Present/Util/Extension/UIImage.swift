@@ -18,14 +18,16 @@ extension UIImage {
             UIGraphicsEndImageContext()
             return image
         }
-    
+
     func roundedCorners(radius: CGFloat, corners: UIRectCorner) -> UIImage? {
             UIGraphicsBeginImageContextWithOptions(size, false, scale)
             let rect = CGRect(origin: .zero, size: size)
             let context = UIGraphicsGetCurrentContext()
 
             context?.beginPath()
-            context?.addPath(UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius)).cgPath)
+            context?.addPath(UIBezierPath(roundedRect: rect,
+                                          byRoundingCorners: corners,
+                                          cornerRadii: CGSize(width: radius, height: radius)).cgPath)
             context?.closePath()
             context?.clip()
 

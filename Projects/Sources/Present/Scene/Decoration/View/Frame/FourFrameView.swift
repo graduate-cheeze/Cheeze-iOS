@@ -36,15 +36,11 @@ final class FourFrameView: UIView {
         $0.clipsToBounds = true
     }
 
-    private let logoImageView = UIImageView().then {
-        $0.image = CheezeAsset.Image.logoImage.image
-    }
-
     // MARK: - LifeCycles
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        self.addSubviews(firstImageView, secondImageView, thirdImageView, fourImageView, logoImageView)
+        self.addSubviews(firstImageView, secondImageView, thirdImageView, fourImageView)
         setLayout()
         configureUI()
     }
@@ -93,13 +89,6 @@ final class FourFrameView: UIView {
             $0.height.equalToSuperview().dividedBy(2.65)
             $0.trailing.equalTo(secondImageView.snp.trailing)
             $0.top.equalTo(secondImageView.snp.bottom).offset(5)
-        }
-        
-        logoImageView.snp.makeConstraints {
-            $0.width.equalTo(100)
-            $0.height.equalTo(70)
-            $0.centerX.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(10)
         }
     }
 

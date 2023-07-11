@@ -4,7 +4,7 @@ import RxSwift
 import RxCocoa
 import RxRelay
 
-final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelegate {
+final class DecoViewController: BaseVC<DecoViewModel> {
     private let menuType: [String] = ["스티커", "프레임"]
 
     private var stickerObjectViews: [StickerObjectView] = []
@@ -76,7 +76,6 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         stickerObjectView.bounds.size = CGSize(width: 70, height: 70)
 
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
-        panGestureRecognizer.delegate = self
         stickerObjectView.addGestureRecognizer(panGestureRecognizer)
 
         stickerObjectViews.append(stickerObjectView)
@@ -86,19 +85,16 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
     @objc private func panGestureHandler(_ gestureRecognizer: UIPanGestureRecognizer) {
         guard let stickerObjectView = gestureRecognizer.view as? StickerObjectView else { return }
 
-        // 스티커 객체 뷰 배열에서 현재 제스처 이벤트를 받고 있는 스티커 객체 뷰 식별
         if let index = stickerObjectViews.firstIndex(of: stickerObjectView) {
             let translation = gestureRecognizer.translation(in: mainImageView)
 
-            // 스티커 객체 뷰 이동 처리
             var center = stickerObjectView.center
             center.x += translation.x
             center.y += translation.y
 
-            // Limit the movement of stickerObjectView to mainImageView bounds
-            let minX = stickerObjectView.bounds.width
+            let minX = stickerObjectView.bounds.width - 25
             let maxX = mainImageView.bounds.width - (stickerObjectView.bounds.width) / 2
-            let minY = stickerObjectView.bounds.height
+            let minY = stickerObjectView.bounds.height - 35
             let maxY = mainImageView.bounds.height - (stickerObjectView.bounds.height) / 2
 
             center.x = max(minX, min(maxX, center.x))
@@ -107,11 +103,6 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
             stickerObjectView.center = center
             gestureRecognizer.setTranslation(.zero, in: stickerObjectView)
         }
-    }
-
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith
-                           otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
     }
 
     @objc private func chooseSaveButtonClicked(sender: UIButton) {
@@ -148,6 +139,8 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
 
         let appID = "Cheeze"
 
+        let backgroundImage = CheezeAsset.Image.background.image
+
         if let storiesUrl = URL(string: "instagram-stories://share?source_application=\(appID)") {
             if UIApplication.shared.canOpenURL(storiesUrl) {
                 // 위의 sharingImageView의 image를 image에 저장
@@ -157,8 +150,7 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
                 let pasteboardItems: [String: Any] = [
                     "com.instagram.sharedSticker.stickerImage": imageData,
                     // 배경 값 : 두 값이 다르면 그래디언트를 생성
-                    "com.instagram.sharedSticker.backgroundTopColor": "#636e72",
-                    "com.instagram.sharedSticker.backgroundBottomColor": "#b2bec3"
+                    "com.instagram.sharedSticker.backgroundImage": backgroundImage
                 ]
                 let pasteboardOptions = [
                     UIPasteboard.OptionsKey.expirationDate: Date().addingTimeInterval(300)
