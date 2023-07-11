@@ -1,25 +1,36 @@
 import UIKit
 
 final class FourFrameView: UIView {
-    private let firstImageView = UIImageView().then {
+    let firstImageView = UIImageView().then {
         $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
+        $0.layer.cornerRadius = 0
+        $0.layer.maskedCorners = .layerMinXMinYCorner
     }
 
     private let secondImageView = UIImageView().then {
+        $0.layer.cornerRadius = 0
+        $0.layer.maskedCorners = .layerMaxXMinYCorner
+        $0.layer.masksToBounds = true
         $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
     }
 
     private let thirdImageView = UIImageView().then {
+        $0.layer.cornerRadius = 0
+        $0.layer.maskedCorners = .layerMinXMaxYCorner
+        $0.layer.masksToBounds = true
         $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
     }
 
     private let fourImageView = UIImageView().then {
+        $0.layer.cornerRadius = 0
+        $0.layer.maskedCorners = .layerMaxXMaxYCorner
+        $0.layer.masksToBounds = true
         $0.backgroundColor = .lightGray
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
@@ -44,7 +55,7 @@ final class FourFrameView: UIView {
 
         self.layer.shadowColor = UIColor.gray.cgColor
         self.layer.shadowOffset = CGSize(width: 0, height: 5)
-        self.layer.shadowOpacity = 0.1
+        self.layer.shadowOpacity = 0.8
         self.layer.shadowRadius = 10
     }
 

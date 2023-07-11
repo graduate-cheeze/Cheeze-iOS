@@ -6,9 +6,19 @@ import RxFlow
 
 final class DecoViewModel: BaseViewModel, Stepper {
     private let selectedPhotosRelay: BehaviorRelay<[PHAsset]>
+    private let newPhotosRelay: BehaviorRelay<[UIImage]>
+
+    let iconList: [UIImage] = [CheezeAsset.Image.skateboard.image,
+                               CheezeAsset.Image.sparkle.image,
+                               CheezeAsset.Image.sunglasses.image,
+                               CheezeAsset.Image.voltage.image,
+                               CheezeAsset.Image.thumbsUp.image,
+                               CheezeAsset.Image.gesture.image,
+                               CheezeAsset.Image.music.image]
 
     init(selectedPhotos: [PHAsset]) {
         selectedPhotosRelay = BehaviorRelay(value: selectedPhotos)
+        newPhotosRelay = BehaviorRelay(value: iconList)
         super.init()
     }
 
@@ -25,6 +35,10 @@ final class DecoViewModel: BaseViewModel, Stepper {
                 let imageRequests = assets.map { self.requestImage(for: $0) }
                 return Observable.combineLatest(imageRequests)
             }
+    }
+
+    var photosList: Observable<[UIImage]> {
+        return newPhotosRelay.asObservable()
     }
 
     func requestImage(for asset: PHAsset) -> Observable<UIImage> {

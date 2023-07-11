@@ -1,7 +1,7 @@
 import UIKit
 
 final class NormalButtonFrame: UIButton {
-    private let buttonIconImageView = UIImageView()
+    let buttonIconImageView = UIImageView()
 
     // MARK: - LifeCycles
     override init(frame: CGRect) {

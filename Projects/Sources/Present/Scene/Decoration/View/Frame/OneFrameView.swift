@@ -4,6 +4,7 @@ final class OneFrameView: UIView {
     private let mainImageView = UIImageView().then {
         $0.contentMode = .scaleAspectFill
         $0.clipsToBounds = true
+        $0.layer.cornerRadius = 8
     }
 
     // MARK: - LifeCycles
