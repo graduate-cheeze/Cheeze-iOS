@@ -10,15 +10,19 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
     private var stickerObjectViews: [StickerObjectView] = []
 
     private let imageBackgroundView = UIView().then {
-        $0.backgroundColor = .red
+        $0.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
         $0.isUserInteractionEnabled = true
     }
 
     private let mainImageView = UIImageView().then {
-        $0.contentMode = .scaleAspectFit
+        $0.contentMode = .scaleAspectFill
         $0.backgroundColor = UIColor.cheezeColor(.neutral(.neutral10))
         $0.isUserInteractionEnabled = true
         $0.clipsToBounds = true
+        $0.layer.shadowColor = UIColor.black.cgColor
+        $0.layer.shadowOffset = CGSize(width: 0, height: 5)
+        $0.layer.shadowOpacity = 0.8
+        $0.layer.shadowRadius = 3
     }
 
     private lazy var menuTypeSegmentedControl = UISegmentedControl(items: menuType).then {
@@ -60,10 +64,10 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
 
     private lazy var saveButton = UIButton().then {
         $0.backgroundColor = .red
-        $0.addTarget(self, action: #selector(chooseSaveButtonClicked), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(shareToInstaStories), for: .touchUpInside)
     }
 
-    //MARK: - Create Sticker
+    // MARK: - Create Sticker
     private func showStickerObjectView(image: UIImage) {
         let stickerObjectView = StickerObjectView(image: image)
         mainImageView.addSubview(stickerObjectView)
@@ -135,6 +139,38 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         }
     }
 
+    @objc func shareToInstaStories(_ sender: Any) {
+        let renderer = UIGraphicsImageRenderer(bounds: mainImageView.bounds)
+
+        let saveImage = renderer.image { context in
+            mainImageView.layer.render(in: context.cgContext)
+        }
+
+        let appID = "Cheeze"
+
+        if let storiesUrl = URL(string: "instagram-stories://share?source_application=\(appID)") {
+            if UIApplication.shared.canOpenURL(storiesUrl) {
+                // 위의 sharingImageView의 image를 image에 저장
+                let image = mainImageView.asImage()
+                // 지원되는 형식에는 JPG,PNG 가 있다.
+                guard let imageData = image.pngData() else { return }
+                let pasteboardItems: [String: Any] = [
+                    "com.instagram.sharedSticker.stickerImage": imageData,
+                    // 배경 값 : 두 값이 다르면 그래디언트를 생성
+                    "com.instagram.sharedSticker.backgroundTopColor": "#636e72",
+                    "com.instagram.sharedSticker.backgroundBottomColor": "#b2bec3"
+                ]
+                let pasteboardOptions = [
+                    UIPasteboard.OptionsKey.expirationDate: Date().addingTimeInterval(300)
+                ]
+                UIPasteboard.general.setItems([pasteboardItems], options: pasteboardOptions)
+                UIApplication.shared.open(storiesUrl, options: [:], completionHandler: nil)
+            } else {
+                print("User doesn't have instagram on their device.")
+            }
+        }
+    }
+
     private func bindCollectionView() {
         viewModel.photosList
             .bind(to: stickerCollectionView.rx.items(
@@ -176,6 +212,12 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         oneFrameView.isHidden = true
         fourFrameView.isHidden = true
 
+        mainImageView.snp.remakeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide)
+            $0.width.equalToSuperview()
+            $0.height.equalToSuperview().dividedBy(1.6)
+        }
+
         viewModel.selectedPhotos
             .subscribe(onNext: { [weak self] images in
                 guard let firstImage = images.first else { return }
@@ -188,6 +230,19 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
         oneFrameView.isHidden = false
         fourFrameView.isHidden = true
         mainImageView.image = .none
+        mainImageView.layer.cornerRadius = 16
+        mainImageView.translatesAutoresizingMaskIntoConstraints = false
+
+        oneFrameView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
+
+        mainImageView.snp.remakeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(444)
+            $0.width.equalTo(375)
+        }
 
         viewModel.selectedPhotos
             .subscribe(onNext: { [weak self] images in
@@ -260,7 +315,7 @@ final class DecoViewController: BaseVC<DecoViewModel>, UIGestureRecognizerDelega
     override func addView() {
         view.addSubviews(imageBackgroundView, mainImageView, oneFrameButton,
                          menuTypeSegmentedControl, stickerCollectionView, saveButton)
-        mainImageView.addSubview(fourFrameView)
+        mainImageView.addSubviews(oneFrameView, fourFrameView)
     }
 
     override func setLayout() {
