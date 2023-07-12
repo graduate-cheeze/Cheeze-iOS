@@ -44,12 +44,12 @@ class StickerObjectView: UIImageView {
 
         self.center = CGPoint(x: changedX, y: changedY)
 
-        print("move")
-
         gesture.setTranslation(.zero, in: self)
     }
 
     @objc private func rotationGestureHandler(_ gesture: UIRotationGestureRecognizer) {
+        self.transform = self.transform.rotated(by: gesture.rotation)
+        gesture.rotation = 0
     }
 
     @objc private func pinchGestureHandler(_ gesture: UIPinchGestureRecognizer) {
@@ -59,6 +59,5 @@ class StickerObjectView: UIImageView {
 
     @objc private func doubleTapGestureHandler(_ gesture: UITapGestureRecognizer) {
         self.removeFromSuperview()
-        print("double")
     }
 }
