@@ -21,7 +21,13 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         $0.backgroundColor = .white
     }
 
-    private lazy var takeButton = TakePhotoButton()
+    private let takeButton = TakePhotoButton()
+
+    private let changeCameraButton = UIButton().then {
+        $0.layer.cornerRadius = 8
+        $0.setImage(CheezeAsset.Image.changeCamera.image, for: .normal)
+        $0.backgroundColor = CheezeAsset.Colors.neutral50.color
+    }
 
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
 
@@ -42,12 +48,26 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         }
     }
 
+    private func takePhotoButtonDidTap() {
+        takeButton.mainButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.takeButtonClicked()
+            }.disposed(by: disposeBag)
+    }
+    
+    private func changeCameraButtonDidTap() {
+        changeCameraButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.returnButtonClicked()
+            }
+    }
+
     private func chooseSaveButtonClicked(saveImg: UIImage) {
         // 사진 저장 코드
         UIImageWriteToSavedPhotosAlbum(saveImg, self, nil, nil)
     }
 
-    @objc private func takeButtonClicked(sender: UIButton) {
+    private func takeButtonClicked() {
         let settings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecType.jpeg])
         stillImageOutput.capturePhoto(with: settings, delegate: self)
     }
@@ -76,6 +96,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
 
     override func configureVC() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftLogoLabel)
+        takePhotoButtonDidTap()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -102,7 +123,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         }
     }
 
-    @objc private func returnButtonClicked(sender:UIButton){
+    private func returnButtonClicked() {
             print("return")
             // 카메라 전환 기능 코드
             captureSession?.beginConfiguration()
@@ -121,7 +142,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
     }
 
     override func addView() {
-        view.addSubviews(takeImageView, takeButton)
+        view.addSubviews(takeImageView, takeButton, changeCameraButton)
     }
 
     override func setLayout() {
@@ -135,6 +156,12 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
             $0.top.equalTo(takeImageView.snp.bottom).offset(89)
             $0.centerX.equalToSuperview()
             $0.size.equalTo(80)
+        }
+
+        changeCameraButton.snp.makeConstraints {
+            $0.centerY.equalTo(takeButton)
+            $0.leading.equalTo(takeButton.snp.trailing).offset(69)
+            $0.size.equalTo(45)
         }
     }
 }
