@@ -1,4 +1,5 @@
 import UIKit
+import RxSwift
 import Photos
 import AVFoundation
 
@@ -14,11 +15,17 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
     }
 
     private let logoImageView = UIImageView().then {
-        $0.image = CheezeAsset.Image.hanni.image
+        $0.image = CheezeAsset.Image.haland.image
     }
 
     private let takeImageView = UIView().then {
         $0.backgroundColor = .white
+    }
+
+    private let countLabel = UILabel().then {
+        $0.font = .systemFont(ofSize: 50)
+        $0.textAlignment = .center
+        $0.textColor = CheezeAsset.Colors.primaryColor3.color
     }
 
     private let takeButton = TakePhotoButton()
@@ -29,13 +36,39 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         $0.backgroundColor = CheezeAsset.Colors.neutral50.color
     }
 
+    private let recommendButton = UIButton()
+
+    private func bindViewModel() {
+        let input = CaptureViewModel.Input(
+            recommendButtonTap: recommendButton.rx.tap.asObservable()
+        )
+        let output = viewModel.transVC(input: input)
+    }
+
+    private func cameraTimer() {
+        let count = 3
+
+        Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+            .take(count + 1)
+            .map { count - $0 }
+            .bind(with: self) { owner, remainingSeconds in
+                owner.countLabel.text = String(format: "%0d", remainingSeconds)
+                if remainingSeconds == 0 {
+                    owner.countLabel.text = "Cheeze"
+                    owner.takeButtonClicked()
+                }
+            }.disposed(by: disposeBag)
+    }
+
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
 
         guard let imageData = photo.fileDataRepresentation(), let image = UIImage(data: imageData) else {
             return
         }
 
-        let saveImageView = UIImageView(image: image)
+        let saveImageView = UIImageView(image: UIImage(cgImage: image.cgImage!,
+                                        scale: image.scale,
+                                        orientation: .leftMirrored))
         saveImageView.frame = CGRect(x: 0, y: 0, width: 390, height: 390)
         saveImageView.contentMode = .scaleAspectFill
         saveImageView.addSubview(logoImageView)
@@ -51,19 +84,18 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
     private func takePhotoButtonDidTap() {
         takeButton.mainButton.rx.tap
             .bind(with: self) { owner, _ in
-                owner.takeButtonClicked()
+                owner.cameraTimer()
             }.disposed(by: disposeBag)
     }
-    
+
     private func changeCameraButtonDidTap() {
         changeCameraButton.rx.tap
             .bind(with: self) { owner, _ in
                 owner.returnButtonClicked()
-            }
+            }.disposed(by: disposeBag)
     }
 
     private func chooseSaveButtonClicked(saveImg: UIImage) {
-        // 사진 저장 코드
         UIImageWriteToSavedPhotosAlbum(saveImg, self, nil, nil)
     }
 
@@ -82,6 +114,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
                                      height: takeImageView.bounds.height)
 
         videoPreviewLayer.addSublayer(logoImageView.layer)
+        videoPreviewLayer.addSublayer(countLabel.layer)
 
         takeImageView.layer.addSublayer(videoPreviewLayer)
         takeImageView.addSubview(logoImageView)
@@ -97,6 +130,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
     override func configureVC() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftLogoLabel)
         takePhotoButtonDidTap()
+        changeCameraButtonDidTap()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -142,7 +176,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
     }
 
     override func addView() {
-        view.addSubviews(takeImageView, takeButton, changeCameraButton)
+        view.addSubviews(takeImageView, takeButton, changeCameraButton, countLabel)
     }
 
     override func setLayout() {
@@ -162,6 +196,10 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
             $0.centerY.equalTo(takeButton)
             $0.leading.equalTo(takeButton.snp.trailing).offset(69)
             $0.size.equalTo(45)
+        }
+
+        countLabel.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
         }
     }
 }

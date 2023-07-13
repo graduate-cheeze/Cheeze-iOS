@@ -23,4 +23,5 @@ enum CZStep: Step {
     case galleryIsRequired
     case captureIsRequired
     case homeIsRequired
+    case recommendIsRequired
 }
