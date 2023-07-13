@@ -21,11 +21,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         $0.backgroundColor = .white
     }
 
-    private lazy var takeButton = UIButton().then {
-        $0.backgroundColor = .red
-        $0.setTitle("cheese", for: .normal)
-        $0.addTarget(self, action: #selector(takeButtonClicked(sender:)), for: .touchUpInside)
-    }
+    private lazy var takeButton = TakePhotoButton()
 
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
 
@@ -136,9 +132,9 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         }
 
         takeButton.snp.makeConstraints {
-            $0.top.equalTo(takeImageView.snp.bottom).offset(20)
+            $0.top.equalTo(takeImageView.snp.bottom).offset(89)
             $0.centerX.equalToSuperview()
-            $0.size.equalTo(50)
+            $0.size.equalTo(80)
         }
     }
 }
