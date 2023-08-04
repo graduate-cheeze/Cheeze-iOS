@@ -3,7 +3,15 @@ import RxSwift
 import Photos
 import AVFoundation
 
-final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptureDelegate {
+final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptureDelegate,  RecommendViewControllerDelegate  {
+
+    func didSelectImage(_ image: UIImage) {
+        DispatchQueue.main.async { [weak self] in
+                self?.logoImageView.image = image
+        }
+        print(image)
+    }
+
     var captureSession: AVCaptureSession!
     var stillImageOutput: AVCapturePhotoOutput!
     var videoPreviewLayer: AVCaptureVideoPreviewLayer!
@@ -14,9 +22,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         $0.text = "사진찍기"
     }
 
-    private let logoImageView = UIImageView().then {
-        $0.image = CheezeAsset.Image.haland.image
-    }
+    private let logoImageView = UIImageView()
 
     private let takeImageView = UIView().then {
         $0.backgroundColor = .white
@@ -36,11 +42,10 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         $0.backgroundColor = CheezeAsset.Colors.neutral50.color
     }
 
-    private let recommendButton = UIButton()
+    private let recommendButton = UIBarButtonItem(image: CheezeAsset.Image.recommend.image, style: .plain, target: nil, action: nil)
 
     private func bindViewModel() {
         let input = CaptureViewModel.Input(
-            recommendButtonTap: recommendButton.rx.tap.asObservable()
         )
         let output = viewModel.transVC(input: input)
     }
@@ -54,7 +59,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
             .bind(with: self) { owner, remainingSeconds in
                 owner.countLabel.text = String(format: "%0d", remainingSeconds)
                 if remainingSeconds == 0 {
-                    owner.countLabel.text = "Cheeze"
+                    owner.countLabel.text = ""
                     owner.takeButtonClicked()
                 }
             }.disposed(by: disposeBag)
@@ -72,9 +77,6 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         saveImageView.frame = CGRect(x: 0, y: 0, width: 390, height: 390)
         saveImageView.contentMode = .scaleAspectFill
         saveImageView.addSubview(logoImageView)
-
-        videoPreviewLayer.isHidden = false
-        logoImageView.isHidden = false
 
         DispatchQueue.main.async { [weak self] in
             self?.chooseSaveButtonClicked(saveImg: saveImageView.asImage())
@@ -114,7 +116,6 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
                                      height: takeImageView.bounds.height)
 
         videoPreviewLayer.addSublayer(logoImageView.layer)
-        videoPreviewLayer.addSublayer(countLabel.layer)
 
         takeImageView.layer.addSublayer(videoPreviewLayer)
         takeImageView.addSubview(logoImageView)
@@ -131,6 +132,18 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftLogoLabel)
         takePhotoButtonDidTap()
         changeCameraButtonDidTap()
+        bindViewModel()
+        
+        recommendButton.rx.tap
+                .bind { [weak self] in
+                    let recommendVC = RecommendViewController(RecommendViewModel())
+                    recommendVC.delegate = self
+                    self?.navigationController?.pushViewController(recommendVC, animated: true)
+                }
+                .disposed(by: disposeBag)
+        
+        
+        navigationItem.rightBarButtonItem = recommendButton
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -200,6 +213,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
 
         countLabel.snp.makeConstraints {
             $0.centerX.equalToSuperview()
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(8)
         }
     }
 }
