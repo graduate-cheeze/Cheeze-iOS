@@ -64,9 +64,7 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
     private func bind() {
         selectedPhotos.asObservable()
             .map { $0.isEmpty }
-            .bind(with: self) { owner, isVaild in
-                owner.completeButton.isHidden = isVaild
-            }
+            .bind(to: completeButton.rx.isHidden)
             .disposed(by: disposeBag)
     }
 
