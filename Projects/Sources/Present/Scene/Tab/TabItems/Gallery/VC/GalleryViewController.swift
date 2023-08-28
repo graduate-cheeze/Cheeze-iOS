@@ -57,9 +57,17 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: leftLogoLabel)
         navigationItem.rightBarButtonItem = completeButton
 
-        bind()
         bindViewModel()
         configureRefreshControl()
+    }
+
+    private func bind() {
+        selectedPhotos.asObservable()
+            .map { $0.isEmpty }
+            .bind(with: self) { owner, isVaild in
+                owner.completeButton.isHidden = isVaild
+            }
+            .disposed(by: disposeBag)
     }
 
     private func configureRefreshControl() {
@@ -82,13 +90,6 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
 
     override func viewWillAppear(_ animated: Bool) {
         galleryCollectionView.reloadData()
-    }
-
-    private func bind() {
-        selectedPhotos.asObservable()
-            .map { $0.isEmpty } // 선택된 사진이 없는 경우
-            .bind(to: completeButton.rx.isHidden)
-            .disposed(by: disposeBag)
     }
 
     private func bindViewModel() {
