@@ -31,7 +31,8 @@ class CaptureFlow: Flow {
         switch step {
         case .captureIsRequired:
             return captureIsRequired()
-
+        case .recommendIsRequired:
+            return recommendIsRequired()
         default:
             return .none
         }
@@ -40,6 +41,13 @@ class CaptureFlow: Flow {
     private func captureIsRequired() -> FlowContributors {
         let viewModel = CaptureViewModel()
         let viewController = CaptureViewController(viewModel)
+        self.rootViewController.pushViewController(viewController, animated: true)
+        return .one(flowContributor: .contribute(withNext: viewController))
+    }
+
+    private func recommendIsRequired() -> FlowContributors {
+        let viewModel = RecommendViewModel()
+        let viewController = RecommendViewController(viewModel)
         self.rootViewController.pushViewController(viewController, animated: true)
         return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
     }
