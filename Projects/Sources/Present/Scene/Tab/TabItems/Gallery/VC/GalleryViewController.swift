@@ -87,7 +87,7 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
     private func bind() {
         selectedPhotos.asObservable()
             .map { $0.isEmpty } // 선택된 사진이 없는 경우
-            .bind(to: completeButton.rx.isHidden) // 확인 버튼의 isHidden 속성에 바인딩
+            .bind(to: completeButton.rx.isHidden)
             .disposed(by: disposeBag)
     }
 

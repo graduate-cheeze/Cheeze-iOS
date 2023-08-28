@@ -18,16 +18,10 @@ final class GalleryViewModel: BaseViewModel, Stepper {
     func transVC(input: Input) -> Output {
         input.completeButtonTap.subscribe(
             onNext: { _ in
-                self.pushDecoVC()
             }
         ) .disposed(by: disposeBag)
 
         return Output()
-    }
-
-    private func pushDecoVC() {
-        let selectedPhotos = selectedPhotosRelay.value
-        self.steps.accept(CZStep.decoIsRequired(selectedPhotos))
     }
 
     func updateSelectedPhotos(_ photos: [PHAsset]) {
