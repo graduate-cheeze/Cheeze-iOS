@@ -62,10 +62,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         $0.isHidden = true
     }
 
-    private lazy var saveButton = UIButton().then {
-        $0.backgroundColor = .red
-        $0.addTarget(self, action: #selector(shareToInstaStories), for: .touchUpInside)
-    }
+    private lazy var uploadButton = UIBarButtonItem(image: CheezeAsset.Image.upload.image, style: .plain, target: nil, action: nil)
 
     // MARK: - Create Sticker
     private func showStickerObjectView(image: UIImage) {
@@ -73,7 +70,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         mainImageView.addSubview(stickerObjectView)
 
         stickerObjectView.center = mainImageView.center
-        stickerObjectView.bounds.size = CGSize(width: 70, height: 70)
+        stickerObjectView.bounds.size = CGSize(width: 90, height: 90)
 
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
         stickerObjectView.addGestureRecognizer(panGestureRecognizer)
@@ -105,7 +102,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         }
     }
 
-    @objc private func chooseSaveButtonClicked(sender: UIButton) {
+    private func chooseSaveButtonClicked() {
         // 사진 저장 코드
         let renderer = UIGraphicsImageRenderer(bounds: mainImageView.bounds)
 
@@ -130,7 +127,15 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         }
     }
 
-    @objc func shareToInstaStories(_ sender: Any) {
+    private func uploadButtonDidTap() {
+        uploadButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.shareToInstaStories()
+                owner.chooseSaveButtonClicked()
+            }
+    }
+
+    private func shareToInstaStories() {
         let renderer = UIGraphicsImageRenderer(bounds: mainImageView.bounds)
 
         let saveImage = renderer.image { context in
@@ -290,7 +295,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
 
     // MARK: - ConfigureVC
     override func configureVC() {
-        navigationItem.title = "1/10"
+        navigationItem.title = "꾸미기"
         self.tabBarController?.tabBar.isHidden = true
         stickerCollectionView.delegate = self
 
@@ -298,6 +303,8 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         oneFrameButtonDidTap()
         setMainImage()
         bindCollectionView()
+        uploadButtonDidTap()
+        navigationItem.rightBarButtonItem = uploadButton
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -306,7 +313,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
 
     override func addView() {
         view.addSubviews(imageBackgroundView, mainImageView, oneFrameButton,
-                         menuTypeSegmentedControl, stickerCollectionView, saveButton)
+                         menuTypeSegmentedControl, stickerCollectionView)
         mainImageView.addSubviews(oneFrameView, fourFrameView)
     }
 
@@ -341,13 +348,6 @@ final class DecoViewController: BaseVC<DecoViewModel> {
             $0.leading.equalToSuperview().offset(10)
             $0.trailing.equalToSuperview()
             $0.height.equalTo(70)
-        }
-
-        saveButton.snp.makeConstraints {
-            $0.top.equalTo(menuTypeSegmentedControl.snp.top)
-            $0.leading.equalTo(menuTypeSegmentedControl.snp.trailing).offset(10)
-            $0.height.equalTo(30)
-            $0.width.equalTo(30)
         }
     }
 }
