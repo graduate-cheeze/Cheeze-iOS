@@ -59,29 +59,6 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
 
         bind()
         bindViewModel()
-        configureRefreshControl()
-    }
-
-    private func configureRefreshControl() {
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self,
-                                 action: #selector(handleRefreshControl(_:)),
-                                 for: .valueChanged)
-        galleryCollectionView.refreshControl = refreshControl
-    }
-
-    @objc private func handleRefreshControl(_ sender: UIRefreshControl) {
-        DispatchQueue.global(qos: .background).async { [weak self] in
-               self?.loadGallery()
-               DispatchQueue.main.async {
-                   self?.galleryCollectionView.reloadData()
-                   self?.galleryCollectionView.refreshControl?.endRefreshing()
-               }
-           }
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        galleryCollectionView.reloadData()
     }
 
     private func bind() {
