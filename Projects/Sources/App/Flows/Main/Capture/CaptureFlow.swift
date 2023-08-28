@@ -42,7 +42,7 @@ class CaptureFlow: Flow {
         let viewModel = CaptureViewModel()
         let viewController = CaptureViewController(viewModel)
         self.rootViewController.pushViewController(viewController, animated: true)
-        return .one(flowContributor: .contribute(withNextPresentable: viewController, withNextStepper: viewModel))
+        return .one(flowContributor: .contribute(withNext: viewController))
     }
 
     private func recommendIsRequired() -> FlowContributors {

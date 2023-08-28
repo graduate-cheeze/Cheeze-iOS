@@ -9,11 +9,6 @@ final class RecommendViewModel: BaseViewModel, Stepper {
 
     let photoList: [UIImage] = [CheezeAsset.Image.hanni.image,
                                 CheezeAsset.Image.apple.image,
-                                CheezeAsset.Image.gundal.image,
-                                CheezeAsset.Image.jungWoo.image,
-                                CheezeAsset.Image.jungWookiss.image,
-                                CheezeAsset.Image.taebeen.image,
-                                CheezeAsset.Image.wany.image,
                                 CheezeAsset.Image.ssyy.image,
                                 CheezeAsset.Image.sang.image,
                                 CheezeAsset.Image.yee.image,

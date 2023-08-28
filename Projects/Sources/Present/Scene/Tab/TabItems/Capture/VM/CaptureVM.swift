@@ -3,7 +3,7 @@ import RxSwift
 import RxCocoa
 import RxFlow
 
-final class CaptureViewModel: BaseViewModel, Stepper {
+final class CaptureViewModel: BaseViewModel {
     struct Input {
     }
 

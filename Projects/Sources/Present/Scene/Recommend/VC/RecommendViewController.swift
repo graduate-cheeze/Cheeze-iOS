@@ -6,7 +6,7 @@ protocol RecommendViewControllerDelegate: AnyObject {
 
 final class RecommendViewController: BaseVC<RecommendViewModel> {
     weak var delegate: RecommendViewControllerDelegate?
-    
+
     private let flowLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .vertical
         $0.minimumLineSpacing = 8
@@ -42,7 +42,7 @@ final class RecommendViewController: BaseVC<RecommendViewModel> {
                     cell.mainImageView.image = photo
             }
             .disposed(by: disposeBag)
-        
+
         recommendCollectionView.rx.itemSelected
             .subscribe(onNext: { [weak self] indexPath in
                 guard let cell = self!.recommendCollectionView.cellForItem(at: indexPath) as?

@@ -2,8 +2,15 @@ import UIKit
 import RxSwift
 import Photos
 import AVFoundation
+import RxFlow
+import RxCocoa
 
-final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptureDelegate,  RecommendViewControllerDelegate  {
+final class CaptureViewController: BaseVC<CaptureViewModel>,
+                                    AVCapturePhotoCaptureDelegate,
+                                    RecommendViewControllerDelegate,
+                                    Stepper {
+
+    var steps = PublishRelay<Step>()
 
     func didSelectImage(_ image: UIImage) {
         DispatchQueue.main.async { [weak self] in
@@ -138,7 +145,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>, AVCapturePhotoCaptu
                 .bind { [weak self] in
                     let recommendVC = RecommendViewController(RecommendViewModel())
                     recommendVC.delegate = self
-                    self?.navigationController?.pushViewController(recommendVC, animated: true)
+                    self?.steps.accept(CZStep.recommendIsRequired)
                 }
                 .disposed(by: disposeBag)
         
