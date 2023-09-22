@@ -62,33 +62,35 @@ final class FourFrameView: UIView {
     private func setLayout() {
         self.snp.makeConstraints {
             $0.width.equalTo(375)
-            $0.height.equalTo(444)
+            $0.height.equalTo(700)
         }
 
         firstImageView.snp.makeConstraints {
-            $0.width.equalToSuperview().dividedBy(2.29)
-            $0.height.equalToSuperview().dividedBy(2.65)
-            $0.leading.top.equalToSuperview().offset(20)
+            $0.width.equalToSuperview().dividedBy(2.33)
+            $0.height.equalToSuperview().dividedBy(3)
+            $0.top.equalToSuperview().offset(108)
+            $0.leading.equalToSuperview().offset(19)
         }
 
         secondImageView.snp.makeConstraints {
-            $0.width.equalToSuperview().dividedBy(2.29)
-            $0.height.equalToSuperview().dividedBy(2.65)
-            $0.trailing.top.equalToSuperview().inset(20)
+            $0.width.equalToSuperview().dividedBy(2.33)
+            $0.height.equalToSuperview().dividedBy(3)
+            $0.top.equalToSuperview().offset(108)
+            $0.trailing.equalToSuperview().inset(19)
         }
 
         thirdImageView.snp.makeConstraints {
-            $0.width.equalToSuperview().dividedBy(2.29)
-            $0.height.equalToSuperview().dividedBy(2.65)
+            $0.width.equalToSuperview().dividedBy(2.33)
+            $0.height.equalToSuperview().dividedBy(3)
             $0.leading.equalTo(firstImageView.snp.leading)
-            $0.top.equalTo(firstImageView.snp.bottom).offset(5)
+            $0.top.equalTo(firstImageView.snp.bottom).offset(11)
         }
 
         fourImageView.snp.makeConstraints {
-            $0.width.equalToSuperview().dividedBy(2.29)
-            $0.height.equalToSuperview().dividedBy(2.65)
+            $0.width.equalToSuperview().dividedBy(2.33)
+            $0.height.equalToSuperview().dividedBy(3)
             $0.trailing.equalTo(secondImageView.snp.trailing)
-            $0.top.equalTo(secondImageView.snp.bottom).offset(5)
+            $0.top.equalTo(secondImageView.snp.bottom).offset(11)
         }
     }
 

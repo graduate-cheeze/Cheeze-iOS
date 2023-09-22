@@ -31,19 +31,13 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
 
         if status == .authorized {
-            // 권한이 승인된 경우 갤러리 로드 작업 진행
             self.loadGallery()
         } else if status == .denied || status == .restricted {
-            // 권한이 거부되거나 제한된 경우 알림을 표시하거나 대체 작업 수행
-            // 사용자에게 권한을 요청하도록 안내할 수도 있습니다.
         } else if status == .notDetermined {
-            // 권한이 아직 결정되지 않은 경우 권한 요청
             PHPhotoLibrary.requestAuthorization { (newStatus) in
                 if newStatus == .authorized {
-                    // 권한이 승인된 경우 갤러리 로드 작업 진행
                     self.loadGallery()
                 } else {
-                    // 권한이 거부되거나 제한된 경우 알림을 표시하거나 대체 작업 수행
                 }
             }
         }
@@ -84,10 +78,11 @@ final class GalleryViewController: BaseVC<GalleryViewModel> {
         galleryCollectionView.reloadData()
     }
 
+    
     private func bind() {
         selectedPhotos.asObservable()
-            .map { $0.isEmpty } // 선택된 사진이 없는 경우
-            .bind(to: completeButton.rx.isHidden) // 확인 버튼의 isHidden 속성에 바인딩
+            .map { $0.isEmpty }
+            .bind(to: completeButton.rx.isHidden)
             .disposed(by: disposeBag)
     }
 

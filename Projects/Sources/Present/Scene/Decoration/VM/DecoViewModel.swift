@@ -8,11 +8,13 @@ final class DecoViewModel: BaseViewModel, Stepper {
     private let selectedPhotosRelay: BehaviorRelay<[PHAsset]>
     private let newPhotosRelay: BehaviorRelay<[UIImage]>
 
-    let iconList: [UIImage] = [CheezeAsset.Image.skateboard.image,
+    let iconList: [UIImage] = [CheezeAsset.Image.cheezelogo.image,
+                               CheezeAsset.Image.skateboard.image,
                                CheezeAsset.Image.sparkle.image,
                                CheezeAsset.Image.sunglasses.image,
                                CheezeAsset.Image.voltage.image,
                                CheezeAsset.Image.thumbsUp.image,
+                               CheezeAsset.Image.leg.image,
                                CheezeAsset.Image.gesture.image,
                                CheezeAsset.Image.music.image]
 

@@ -13,7 +13,6 @@ final class RecommendViewController: BaseVC<RecommendViewModel> {
     }
 
     private lazy var recommendCollectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout).then {
-
         $0.isUserInteractionEnabled = true
         $0.showsHorizontalScrollIndicator = false
         $0.backgroundColor = .clear

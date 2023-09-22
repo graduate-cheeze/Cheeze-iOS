@@ -263,9 +263,9 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         }
 
         mainImageView.snp.remakeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(24)
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(13)
             $0.centerX.equalToSuperview()
-            $0.height.equalTo(444)
+            $0.height.equalTo(510)
             $0.width.equalTo(375)
         }
 

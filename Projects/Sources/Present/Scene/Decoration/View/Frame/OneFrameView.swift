@@ -37,8 +37,7 @@ final class OneFrameView: UIView {
         }
 
         mainImageView.snp.makeConstraints {
-            $0.leading.trailing.top.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview().inset(89)
+            $0.leading.trailing.top.bottom.equalToSuperview().inset(20)
         }
     }
 

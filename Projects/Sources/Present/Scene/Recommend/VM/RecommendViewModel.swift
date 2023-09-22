@@ -8,13 +8,9 @@ final class RecommendViewModel: BaseViewModel, Stepper {
     private let newPhotosRelay: BehaviorRelay<[UIImage]>
 
     let photoList: [UIImage] = [CheezeAsset.Image.hanni.image,
-                                CheezeAsset.Image.apple.image,
-                                CheezeAsset.Image.ssyy.image,
-                                CheezeAsset.Image.sang.image,
-                                CheezeAsset.Image.yee.image,
-                                CheezeAsset.Image.zza.image,
                                 CheezeAsset.Image.haland.image,
-                                CheezeAsset.Image.man.image]
+                                CheezeAsset.Image.man.image,
+                                CheezeAsset.Image.wany.image]
 
     override init() {
         newPhotosRelay = BehaviorRelay(value: photoList)
