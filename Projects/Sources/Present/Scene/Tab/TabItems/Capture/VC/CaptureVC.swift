@@ -13,10 +13,11 @@ final class CaptureViewController: BaseVC<CaptureViewModel>,
     var steps = PublishRelay<Step>()
 
     func didSelectImage(_ image: UIImage) {
+        print("동작")
         DispatchQueue.main.async { [weak self] in
                 self?.logoImageView.image = image
         }
-        print(image)
+        print("\(image) 입니다")
     }
 
     var captureSession: AVCaptureSession!
@@ -140,16 +141,12 @@ final class CaptureViewController: BaseVC<CaptureViewModel>,
         takePhotoButtonDidTap()
         changeCameraButtonDidTap()
         bindViewModel()
-        
+        RecommendViewController.delegate = self
         recommendButton.rx.tap
                 .bind { [weak self] in
-                    let recommendVC = RecommendViewController(RecommendViewModel())
-                    recommendVC.delegate = self
                     self?.steps.accept(CZStep.recommendIsRequired)
                 }
                 .disposed(by: disposeBag)
-        
-        
         navigationItem.rightBarButtonItem = recommendButton
     }
 

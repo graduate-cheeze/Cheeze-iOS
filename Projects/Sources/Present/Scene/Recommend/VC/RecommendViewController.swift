@@ -5,7 +5,7 @@ protocol RecommendViewControllerDelegate: AnyObject {
 }
 
 final class RecommendViewController: BaseVC<RecommendViewModel> {
-    weak var delegate: RecommendViewControllerDelegate?
+    static var delegate: RecommendViewControllerDelegate?
 
     private let flowLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .vertical
@@ -25,7 +25,6 @@ final class RecommendViewController: BaseVC<RecommendViewModel> {
         navigationItem.title = "포즈추천"
         self.tabBarController?.tabBar.isHidden = true
         recommendCollectionView.delegate = self
-
         bindCollectionView()
     }
 
@@ -47,8 +46,14 @@ final class RecommendViewController: BaseVC<RecommendViewModel> {
                 guard let cell = self!.recommendCollectionView.cellForItem(at: indexPath) as?
                         RecommendCell else { return }
                 let image = cell.mainImageView.image
+                print("이미지 선택")
+                print(image)
 
-                self?.delegate?.didSelectImage(image!)
+                if let delegate = RecommendViewController.delegate {
+                            delegate.didSelectImage(image!)
+                        } else {
+                            print("Delegate is nil")
+                        }
                 self?.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
