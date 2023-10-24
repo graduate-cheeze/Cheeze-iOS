@@ -5,7 +5,7 @@ protocol RecommendViewControllerDelegate: AnyObject {
 }
 
 final class RecommendViewController: BaseVC<RecommendViewModel> {
-    static var delegate: RecommendViewControllerDelegate?
+    weak var delegate: RecommendViewControllerDelegate?
 
     private let flowLayout = UICollectionViewFlowLayout().then {
         $0.scrollDirection = .vertical
@@ -49,7 +49,7 @@ final class RecommendViewController: BaseVC<RecommendViewModel> {
                 print("이미지 선택")
                 print(image)
 
-                if let delegate = RecommendViewController.delegate {
+                if let delegate = self!.delegate {
                             delegate.didSelectImage(image!)
                         } else {
                             print("Delegate is nil")

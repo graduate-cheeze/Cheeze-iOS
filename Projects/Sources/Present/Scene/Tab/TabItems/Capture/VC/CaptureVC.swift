@@ -9,16 +9,7 @@ final class CaptureViewController: BaseVC<CaptureViewModel>,
                                     AVCapturePhotoCaptureDelegate,
                                     RecommendViewControllerDelegate,
                                     Stepper {
-
     var steps = PublishRelay<Step>()
-
-    func didSelectImage(_ image: UIImage) {
-        print("동작")
-        DispatchQueue.main.async { [weak self] in
-                self?.logoImageView.image = image
-        }
-        print("\(image) 입니다")
-    }
 
     var captureSession: AVCaptureSession!
     var stillImageOutput: AVCapturePhotoOutput!
@@ -141,7 +132,6 @@ final class CaptureViewController: BaseVC<CaptureViewModel>,
         takePhotoButtonDidTap()
         changeCameraButtonDidTap()
         bindViewModel()
-        RecommendViewController.delegate = self
         recommendButton.rx.tap
                 .bind { [weak self] in
                     self?.steps.accept(CZStep.recommendIsRequired)
@@ -219,5 +209,19 @@ final class CaptureViewController: BaseVC<CaptureViewModel>,
             $0.centerX.equalToSuperview()
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(8)
         }
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+            if let receiverVC = segue.destination as? RecommendViewController {
+                receiverVC.delegate = self
+            }
+        }
+
+    func didSelectImage(_ image: UIImage) {
+        print("동작")
+        DispatchQueue.main.async { [weak self] in
+                self?.logoImageView.image = image
+        }
+        print("\(image) 입니다")
     }
 }
