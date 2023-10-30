@@ -288,11 +288,6 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         }
     }
 
-    private func bindViewMode() {
-        let input = DecoViewModel.Input()
-        let output = viewModel.transVC(input: input)
-    }
-
     // MARK: - ConfigureVC
     override func configureVC() {
         navigationItem.title = "꾸미기"

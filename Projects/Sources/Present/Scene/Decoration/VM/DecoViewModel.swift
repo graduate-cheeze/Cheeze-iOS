@@ -24,13 +24,6 @@ final class DecoViewModel: BaseViewModel, Stepper {
         super.init()
     }
 
-    struct Input {
-
-    }
-
-    struct Output {
-    }
-
     var selectedPhotos: Observable<[UIImage]> {
         return selectedPhotosRelay.asObservable()
             .flatMapLatest { assets -> Observable<[UIImage]> in
@@ -58,9 +51,5 @@ final class DecoViewModel: BaseViewModel, Stepper {
 
             return Disposables.create()
         }
-    }
-
-    func transVC(input: Input) -> Output {
-        return Output()
     }
 }
