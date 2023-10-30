@@ -4,21 +4,12 @@ import RxCocoa
 import RxFlow
 
 final class SignInViewModel: BaseViewModel, Stepper {
-    struct Input {
-        let decoButtonTap: Observable<Void>
-    }
-
-    struct Output {
-
-    }
-
-    func transVC(input: Input) -> Output {
-        input.decoButtonTap.subscribe(
+    func transVC(decoButtonTap: Observable<Void>) {
+        decoButtonTap.subscribe(
             onNext: { _ in
                 self.pushDecoVC()
             }
         ) .disposed(by: disposeBag)
-        return Output()
     }
 
     private func pushSignInVC() {

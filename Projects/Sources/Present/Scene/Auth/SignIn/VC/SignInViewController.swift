@@ -37,10 +37,7 @@ final class SignInViewController: BaseVC<SignInViewModel> {
     }
 
     private func bindViewModel() {
-        let input = SignInViewModel.Input(
-            decoButtonTap: signInButton.mainButton.rx.tap.asObservable()
-        )
-        let output = viewModel.transVC(input: input)
+        viewModel.transVC(decoButtonTap: signInButton.mainButton.rx.tap.asObservable())
     }
 
     override func configureVC() {
