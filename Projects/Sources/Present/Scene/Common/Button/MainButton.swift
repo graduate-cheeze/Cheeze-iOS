@@ -24,25 +24,21 @@ final class MainButton: UIView {
         $0.setTitleColor(UIColor.black, for: .normal)
     }
 
-    lazy var innerShadowLayer: CAShapeLayer = {
-        let shadowLayer = CAShapeLayer()
-        shadowLayer.shadowColor = UIColor.rgba(red: 255, green: 255, blue: 255, alpha: 0.6).cgColor
-        shadowLayer.shadowOffset = CGSize(width: 5, height: 5)
-        shadowLayer.shadowOpacity = 5
-        shadowLayer.shadowRadius = 5
-        shadowLayer.fillRule = .evenOdd
-        return shadowLayer
-    }()
+    lazy var innerShadowLayer = CAShapeLayer().then {
+        $0.shadowColor = UIColor.rgba(red: 255, green: 255, blue: 255, alpha: 0.6).cgColor
+        $0.shadowOffset = CGSize(width: 5, height: 5)
+        $0.shadowOpacity = 5
+        $0.shadowRadius = 5
+        $0.fillRule = .evenOdd
+    }
 
-    lazy var innerShadowSubLayer: CAShapeLayer = {
-        let shadowLayer = CAShapeLayer()
-        shadowLayer.shadowColor = UIColor.rgba(red: 174, green: 94, blue: 0, alpha: 0.1).cgColor
-        shadowLayer.shadowOffset = CGSize(width: -6, height: -6)
-        shadowLayer.shadowOpacity = 5
-        shadowLayer.shadowRadius = 20
-        shadowLayer.fillRule = .evenOdd
-        return shadowLayer
-    }()
+    lazy var innerShadowSubLayer = CAShapeLayer().then {
+        $0.shadowColor = UIColor.rgba(red: 174, green: 94, blue: 0, alpha: 0.1).cgColor
+        $0.shadowOffset = CGSize(width: -6, height: -6)
+        $0.shadowOpacity = 5
+        $0.shadowRadius = 20
+        $0.fillRule = .evenOdd
+    }
 
     lazy var outShadowSubLayer = CAShapeLayer().then {
         $0.shadowColor = CheezeAsset.Colors.primaryColor2.color.cgColor
