@@ -148,13 +148,12 @@ final class DecoViewController: BaseVC<DecoViewModel> {
 
         if let storiesUrl = URL(string: "instagram-stories://share?source_application=\(appID)") {
             if UIApplication.shared.canOpenURL(storiesUrl) {
-                // 위의 sharingImageView의 image를 image에 저장
+
                 let image = mainImageView.asImage()
-                // 지원되는 형식에는 JPG,PNG 가 있다.
+
                 guard let imageData = image.pngData() else { return }
                 let pasteboardItems: [String: Any] = [
                     "com.instagram.sharedSticker.stickerImage": imageData,
-                    // 배경 값 : 두 값이 다르면 그래디언트를 생성
                     "com.instagram.sharedSticker.backgroundImage": backgroundImage
                 ]
                 let pasteboardOptions = [
