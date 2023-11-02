@@ -1,7 +1,8 @@
 import UIKit
 
 class StickerObjectView: UIImageView {
-    private var panGesture: UIPanGestureRecognizer!
+    private var stickerObjectViews: [StickerObjectView] = []
+
     private var rotationGesture: UIRotationGestureRecognizer!
     private var pinchGesture: UIPinchGestureRecognizer!
     private var doubleTapGesture: UITapGestureRecognizer!
@@ -34,17 +35,6 @@ class StickerObjectView: UIImageView {
 
         // Enable user interaction
         self.isUserInteractionEnabled = true
-    }
-
-    @objc func panGestureHandler(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: self)
-
-        let changedX = self.center.x + translation.x
-        let changedY = self.center.y + translation.y
-
-        self.center = CGPoint(x: changedX, y: changedY)
-
-        gesture.setTranslation(.zero, in: self)
     }
 
     @objc private func rotationGestureHandler(_ gesture: UIRotationGestureRecognizer) {

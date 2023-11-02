@@ -65,6 +65,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private lazy var uploadButton = UIBarButtonItem(image: CheezeAsset.Image.upload.image, style: .plain, target: nil, action: nil)
 
     // MARK: - Create Sticker
+
     private func showStickerObjectView(image: UIImage) {
         let stickerObjectView = StickerObjectView(image: image)
         mainImageView.addSubview(stickerObjectView)
@@ -72,14 +73,14 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         stickerObjectView.center = mainImageView.center
         stickerObjectView.bounds.size = CGSize(width: 90, height: 90)
 
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
-        stickerObjectView.addGestureRecognizer(panGestureRecognizer)
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureHandler(_:)))
+        stickerObjectView.addGestureRecognizer(panGesture)
 
         stickerObjectViews.append(stickerObjectView)
-        print("ㅋㅋ")
+        print("하하")
     }
 
-    @objc private func panGestureHandler(_ gestureRecognizer: UIPanGestureRecognizer) {
+    @objc func panGestureHandler(_ gestureRecognizer: UIPanGestureRecognizer) {
         guard let stickerObjectView = gestureRecognizer.view as? StickerObjectView else { return }
 
         if let index = stickerObjectViews.firstIndex(of: stickerObjectView) {
@@ -98,12 +99,10 @@ final class DecoViewController: BaseVC<DecoViewModel> {
             center.y = max(minY, min(maxY, center.y))
 
             stickerObjectView.center = center
-            gestureRecognizer.setTranslation(.zero, in: stickerObjectView)
         }
     }
 
     private func chooseSaveButtonClicked() {
-        // 사진 저장 코드
         let renderer = UIGraphicsImageRenderer(bounds: mainImageView.bounds)
 
         let saveImage = renderer.image { context in
