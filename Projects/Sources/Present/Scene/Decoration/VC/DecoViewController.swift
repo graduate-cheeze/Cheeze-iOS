@@ -62,10 +62,10 @@ final class DecoViewController: BaseVC<DecoViewModel> {
         $0.isHidden = true
     }
 
-    private lazy var uploadButton = UIBarButtonItem(image: CheezeAsset.Image.upload.image, style: .plain, target: nil, action: nil)
+    private lazy var uploadButton = UIBarButtonItem(image: CheezeAsset.Image.upload.image,
+                                                    style: .plain, target: nil, action: nil)
 
     // MARK: - Create Sticker
-
     private func showStickerObjectView(image: UIImage) {
         let stickerObjectView = StickerObjectView(image: image)
         mainImageView.addSubview(stickerObjectView)
@@ -99,6 +99,7 @@ final class DecoViewController: BaseVC<DecoViewModel> {
             center.y = max(minY, min(maxY, center.y))
 
             stickerObjectView.center = center
+            gestureRecognizer.setTranslation(.zero, in: stickerObjectView)
         }
     }
 
@@ -129,41 +130,8 @@ final class DecoViewController: BaseVC<DecoViewModel> {
     private func uploadButtonDidTap() {
         uploadButton.rx.tap
             .bind(with: self) { owner, _ in
-                owner.shareToInstaStories()
-                owner.chooseSaveButtonClicked()
+                ShareToInstagram.shareToInstaStories(detailPostView: owner.mainImageView) { print("") }
             }
-    }
-
-    private func shareToInstaStories() {
-        let renderer = UIGraphicsImageRenderer(bounds: mainImageView.bounds)
-
-        let saveImage = renderer.image { context in
-            mainImageView.layer.render(in: context.cgContext)
-        }
-
-        let appID = "Cheeze"
-
-        let backgroundImage = CheezeAsset.Image.background.image
-
-        if let storiesUrl = URL(string: "instagram-stories://share?source_application=\(appID)") {
-            if UIApplication.shared.canOpenURL(storiesUrl) {
-
-                let image = mainImageView.asImage()
-
-                guard let imageData = image.pngData() else { return }
-                let pasteboardItems: [String: Any] = [
-                    "com.instagram.sharedSticker.stickerImage": imageData,
-                    "com.instagram.sharedSticker.backgroundImage": backgroundImage
-                ]
-                let pasteboardOptions = [
-                    UIPasteboard.OptionsKey.expirationDate: Date().addingTimeInterval(300)
-                ]
-                UIPasteboard.general.setItems([pasteboardItems], options: pasteboardOptions)
-                UIApplication.shared.open(storiesUrl, options: [:], completionHandler: nil)
-            } else {
-                print("User doesn't have instagram on their device.")
-            }
-        }
     }
 
     private func bindCollectionView() {
